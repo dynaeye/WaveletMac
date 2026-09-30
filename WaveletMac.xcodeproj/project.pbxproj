@@ -1,0 +1,550 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		08B224EB52F8DEB07FF5CE1E /* WaveletAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13A982A61FDF19C25B8D0946 /* WaveletAssets.xcassets */; };
+		0F695D72E4FE07CDD9008443 /* stations-candidates.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F75E13616163843F0E89D5A /* stations-candidates.json */; };
+		40AF9051462104737DA8143F /* NotoSansSC-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1408CA773B7625451E88DABA /* NotoSansSC-OFL.txt */; };
+		5A2340EFA7B6DA5EACA99CE9 /* Inter.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DF68822DF76D16B822E7E50C /* Inter.ttf */; };
+		625AE91E2A887AF5BF88E0A1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C52B96363B433168BFAFF5C /* ContentView.swift */; };
+		66A5EFAB5BCA25BE4E9634CB /* stations-candidates.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F75E13616163843F0E89D5A /* stations-candidates.json */; };
+		6FC8942B5AF087C6C2FCA3D4 /* PlaybackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A871290EC8D0469135FCC582 /* PlaybackEngine.swift */; };
+		759CCF862D0C222C86B4B624 /* RadioCatalogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CB563B5E8BBB15FA118F3BC /* RadioCatalogStore.swift */; };
+		897ED539D6EF7B1EA2FA6F07 /* Archivo-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = DE370C39BE697DEDDAA3E026 /* Archivo-OFL.txt */; };
+		9CBD6ABB95F5F7ECDD324B4B /* FontRegistrar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90665AE69CAE8A87D069CB2 /* FontRegistrar.swift */; };
+		9EC3D30183E5A6AE693A9499 /* stations.json in Resources */ = {isa = PBXBuildFile; fileRef = 9057B5F89D8C44B080048F64 /* stations.json */; };
+		ABA92B0833C3E16C1DF53E2F /* stations.json in Resources */ = {isa = PBXBuildFile; fileRef = 9057B5F89D8C44B080048F64 /* stations.json */; };
+		B0336966932181041514B709 /* Archivo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EE2A0153E75BEAD7720C1762 /* Archivo.ttf */; };
+		B0935B6C214DC802490E983F /* CatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40F980520BBB82E1063F5AC9 /* CatalogTests.swift */; };
+		B1B88EEA41A4C44402974498 /* NotoSansSC.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0D3CB82C441D5FA8EA36706C /* NotoSansSC.ttf */; };
+		B65F8D1EA824A569CA7E7371 /* SpaceMono-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 585EC4D4233C0A457EEC22C7 /* SpaceMono-OFL.txt */; };
+		C91B569A9AD269BCAD95A0E4 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BECEDB52E884949B826C408 /* MenuBarView.swift */; };
+		CCB7F946937A7D80D5FE3C71 /* 电台目录翻译.json in Resources */ = {isa = PBXBuildFile; fileRef = DB41D7FEA9C0FD0E5230748D /* 电台目录翻译.json */; };
+		ECB00E3DCB870AAF52F24B08 /* Inter-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = DC376507C5C193EF96FE2ADA /* Inter-OFL.txt */; };
+		F05809620A42DDA1D52083C6 /* WaveletMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F812A2EBB4704F2F87878FD0 /* WaveletMacApp.swift */; };
+		F3425A2081006B463EF6E332 /* 电台目录翻译.json in Resources */ = {isa = PBXBuildFile; fileRef = DB41D7FEA9C0FD0E5230748D /* 电台目录翻译.json */; };
+		F4ED2F11C00E9C14CF846C37 /* AudioOutputMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23D63A423AC6BE1F8DD148A /* AudioOutputMonitor.swift */; };
+		F5D5B4426251ADF55A036FF9 /* SpaceMono.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 637332BFAC55E7528FB47E76 /* SpaceMono.ttf */; };
+		FD2882144CD0B5A214D536DF /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E2278317692FA60E95F20B4 /* Models.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		93AAC31601B6111BC102E98F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9011F6B4119E8FD695F153E8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0F9843139832A88D572F707;
+			remoteInfo = WaveletMac;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0D3CB82C441D5FA8EA36706C /* NotoSansSC.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = NotoSansSC.ttf; sourceTree = "<group>"; };
+		13A982A61FDF19C25B8D0946 /* WaveletAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = WaveletAssets.xcassets; sourceTree = "<group>"; };
+		1408CA773B7625451E88DABA /* NotoSansSC-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "NotoSansSC-OFL.txt"; sourceTree = "<group>"; };
+		1C52B96363B433168BFAFF5C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		40F980520BBB82E1063F5AC9 /* CatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogTests.swift; sourceTree = "<group>"; };
+		585EC4D4233C0A457EEC22C7 /* SpaceMono-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "SpaceMono-OFL.txt"; sourceTree = "<group>"; };
+		5BECEDB52E884949B826C408 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		5F75E13616163843F0E89D5A /* stations-candidates.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "stations-candidates.json"; sourceTree = "<group>"; };
+		637332BFAC55E7528FB47E76 /* SpaceMono.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = SpaceMono.ttf; sourceTree = "<group>"; };
+		7CB563B5E8BBB15FA118F3BC /* RadioCatalogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioCatalogStore.swift; sourceTree = "<group>"; };
+		7E2278317692FA60E95F20B4 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		9057B5F89D8C44B080048F64 /* stations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = stations.json; sourceTree = "<group>"; };
+		A871290EC8D0469135FCC582 /* PlaybackEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackEngine.swift; sourceTree = "<group>"; };
+		AB6EA4B4350819633DCB0F99 /* WaveletMacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WaveletMacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D90665AE69CAE8A87D069CB2 /* FontRegistrar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontRegistrar.swift; sourceTree = "<group>"; };
+		DB41D7FEA9C0FD0E5230748D /* 电台目录翻译.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "电台目录翻译.json"; sourceTree = "<group>"; };
+		DC376507C5C193EF96FE2ADA /* Inter-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Inter-OFL.txt"; sourceTree = "<group>"; };
+		DE370C39BE697DEDDAA3E026 /* Archivo-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Archivo-OFL.txt"; sourceTree = "<group>"; };
+		DF68822DF76D16B822E7E50C /* Inter.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Inter.ttf; sourceTree = "<group>"; };
+		EE2A0153E75BEAD7720C1762 /* Archivo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Archivo.ttf; sourceTree = "<group>"; };
+		F23D63A423AC6BE1F8DD148A /* AudioOutputMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioOutputMonitor.swift; sourceTree = "<group>"; };
+		F812A2EBB4704F2F87878FD0 /* WaveletMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveletMacApp.swift; sourceTree = "<group>"; };
+		F86BBDC3B9E16435D1DCD409 /* WaveletMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WaveletMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		3EF2BE7344E92EB1C1B2E529 /* docs */ = {
+			isa = PBXGroup;
+			children = (
+				DB41D7FEA9C0FD0E5230748D /* 电台目录翻译.json */,
+			);
+			path = docs;
+			sourceTree = "<group>";
+		};
+		490EA5C1CDF8699353F2D304 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				7E2278317692FA60E95F20B4 /* Models.swift */,
+				59B6D0E0961DD1A425267773 /* Resources */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		59B6D0E0961DD1A425267773 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				5F75E13616163843F0E89D5A /* stations-candidates.json */,
+				9057B5F89D8C44B080048F64 /* stations.json */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		59CECD6A635F22B06B752789 /* WaveletMac */ = {
+			isa = PBXGroup;
+			children = (
+				F23D63A423AC6BE1F8DD148A /* AudioOutputMonitor.swift */,
+				1C52B96363B433168BFAFF5C /* ContentView.swift */,
+				D90665AE69CAE8A87D069CB2 /* FontRegistrar.swift */,
+				5BECEDB52E884949B826C408 /* MenuBarView.swift */,
+				A871290EC8D0469135FCC582 /* PlaybackEngine.swift */,
+				7CB563B5E8BBB15FA118F3BC /* RadioCatalogStore.swift */,
+				F812A2EBB4704F2F87878FD0 /* WaveletMacApp.swift */,
+			);
+			path = WaveletMac;
+			sourceTree = "<group>";
+		};
+		7BCD7C868A3DEB56BDC20039 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F86BBDC3B9E16435D1DCD409 /* WaveletMac.app */,
+				AB6EA4B4350819633DCB0F99 /* WaveletMacTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7C6DAA8C23FC1C8B20F01333 /* WaveletMacTests */ = {
+			isa = PBXGroup;
+			children = (
+				40F980520BBB82E1063F5AC9 /* CatalogTests.swift */,
+			);
+			path = WaveletMacTests;
+			sourceTree = "<group>";
+		};
+		7F75CD64F6495C78B6DBD21F = {
+			isa = PBXGroup;
+			children = (
+				8CA455ECFDEBAC69C8D20DC6 /* Assets */,
+				3EF2BE7344E92EB1C1B2E529 /* docs */,
+				D2F1408D6AD607EA15597040 /* Fonts */,
+				490EA5C1CDF8699353F2D304 /* Shared */,
+				59CECD6A635F22B06B752789 /* WaveletMac */,
+				7C6DAA8C23FC1C8B20F01333 /* WaveletMacTests */,
+				7BCD7C868A3DEB56BDC20039 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8CA455ECFDEBAC69C8D20DC6 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				13A982A61FDF19C25B8D0946 /* WaveletAssets.xcassets */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		D2F1408D6AD607EA15597040 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				DE370C39BE697DEDDAA3E026 /* Archivo-OFL.txt */,
+				EE2A0153E75BEAD7720C1762 /* Archivo.ttf */,
+				DC376507C5C193EF96FE2ADA /* Inter-OFL.txt */,
+				DF68822DF76D16B822E7E50C /* Inter.ttf */,
+				1408CA773B7625451E88DABA /* NotoSansSC-OFL.txt */,
+				0D3CB82C441D5FA8EA36706C /* NotoSansSC.ttf */,
+				585EC4D4233C0A457EEC22C7 /* SpaceMono-OFL.txt */,
+				637332BFAC55E7528FB47E76 /* SpaceMono.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8ED9FC0A36334C775C61B434 /* WaveletMacTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F9A34467A961E949B6C1FAA4 /* Build configuration list for PBXNativeTarget "WaveletMacTests" */;
+			buildPhases = (
+				8D7C284DF60C5B40D895816B /* Sources */,
+				A40842CCC7712996019E3734 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D382EC0732FB7D89C16AC2B8 /* PBXTargetDependency */,
+			);
+			name = WaveletMacTests;
+			packageProductDependencies = (
+			);
+			productName = WaveletMacTests;
+			productReference = AB6EA4B4350819633DCB0F99 /* WaveletMacTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C0F9843139832A88D572F707 /* WaveletMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 59EE713F536B6888A82118AB /* Build configuration list for PBXNativeTarget "WaveletMac" */;
+			buildPhases = (
+				7077B5DFBB06FF6F1E5DD867 /* Sources */,
+				7B5C25B4923F93E1D9FE6970 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WaveletMac;
+			packageProductDependencies = (
+			);
+			productName = WaveletMac;
+			productReference = F86BBDC3B9E16435D1DCD409 /* WaveletMac.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9011F6B4119E8FD695F153E8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					8ED9FC0A36334C775C61B434 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					C0F9843139832A88D572F707 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 84B998CFAFDA22CA1AAACC3E /* Build configuration list for PBXProject "WaveletMac" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 7F75CD64F6495C78B6DBD21F;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7BCD7C868A3DEB56BDC20039 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C0F9843139832A88D572F707 /* WaveletMac */,
+				8ED9FC0A36334C775C61B434 /* WaveletMacTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7B5C25B4923F93E1D9FE6970 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				897ED539D6EF7B1EA2FA6F07 /* Archivo-OFL.txt in Resources */,
+				B0336966932181041514B709 /* Archivo.ttf in Resources */,
+				ECB00E3DCB870AAF52F24B08 /* Inter-OFL.txt in Resources */,
+				5A2340EFA7B6DA5EACA99CE9 /* Inter.ttf in Resources */,
+				40AF9051462104737DA8143F /* NotoSansSC-OFL.txt in Resources */,
+				B1B88EEA41A4C44402974498 /* NotoSansSC.ttf in Resources */,
+				B65F8D1EA824A569CA7E7371 /* SpaceMono-OFL.txt in Resources */,
+				F5D5B4426251ADF55A036FF9 /* SpaceMono.ttf in Resources */,
+				08B224EB52F8DEB07FF5CE1E /* WaveletAssets.xcassets in Resources */,
+				0F695D72E4FE07CDD9008443 /* stations-candidates.json in Resources */,
+				9EC3D30183E5A6AE693A9499 /* stations.json in Resources */,
+				F3425A2081006B463EF6E332 /* 电台目录翻译.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A40842CCC7712996019E3734 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66A5EFAB5BCA25BE4E9634CB /* stations-candidates.json in Resources */,
+				ABA92B0833C3E16C1DF53E2F /* stations.json in Resources */,
+				CCB7F946937A7D80D5FE3C71 /* 电台目录翻译.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7077B5DFBB06FF6F1E5DD867 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4ED2F11C00E9C14CF846C37 /* AudioOutputMonitor.swift in Sources */,
+				625AE91E2A887AF5BF88E0A1 /* ContentView.swift in Sources */,
+				9CBD6ABB95F5F7ECDD324B4B /* FontRegistrar.swift in Sources */,
+				C91B569A9AD269BCAD95A0E4 /* MenuBarView.swift in Sources */,
+				FD2882144CD0B5A214D536DF /* Models.swift in Sources */,
+				6FC8942B5AF087C6C2FCA3D4 /* PlaybackEngine.swift in Sources */,
+				759CCF862D0C222C86B4B624 /* RadioCatalogStore.swift in Sources */,
+				F05809620A42DDA1D52083C6 /* WaveletMacApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D7C284DF60C5B40D895816B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B0935B6C214DC802490E983F /* CatalogTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D382EC0732FB7D89C16AC2B8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C0F9843139832A88D572F707 /* WaveletMac */;
+			targetProxy = 93AAC31601B6111BC102E98F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		26FAFC0E59C08876A1E534D3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mythmedia.waveletmac.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wavelet.app/Contents/MacOS/Wavelet";
+			};
+			name = Debug;
+		};
+		2EA0783D57E7FE47E7A5382E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		868BEFA59DA312EBF9A385C1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				EXCLUDED_SOURCE_FILE_NAMES = "stations-candidates.json";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Wavelet;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mythmedia.waveletmac;
+				PRODUCT_MODULE_NAME = WaveletMac;
+				PRODUCT_NAME = Wavelet;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		A4A618628E0C7A1C71F9EA37 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		A9B3DAA7C11500CC22C5CC2A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mythmedia.waveletmac.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Wavelet.app/Contents/MacOS/Wavelet";
+			};
+			name = Release;
+		};
+		B30C92C576B015CED5A58C92 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				EXCLUDED_SOURCE_FILE_NAMES = stations.json;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Wavelet;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mythmedia.waveletmac;
+				PRODUCT_MODULE_NAME = WaveletMac;
+				PRODUCT_NAME = Wavelet;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		59EE713F536B6888A82118AB /* Build configuration list for PBXNativeTarget "WaveletMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B30C92C576B015CED5A58C92 /* Debug */,
+				868BEFA59DA312EBF9A385C1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		84B998CFAFDA22CA1AAACC3E /* Build configuration list for PBXProject "WaveletMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2EA0783D57E7FE47E7A5382E /* Debug */,
+				A4A618628E0C7A1C71F9EA37 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F9A34467A961E949B6C1FAA4 /* Build configuration list for PBXNativeTarget "WaveletMacTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				26FAFC0E59C08876A1E534D3 /* Debug */,
+				A9B3DAA7C11500CC22C5CC2A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9011F6B4119E8FD695F153E8 /* Project object */;
+}

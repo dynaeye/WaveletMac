@@ -1,0 +1,79 @@
+name: WaveletMac
+
+options:
+  createIntermediateGroups: true
+  deploymentTarget:
+    macOS: "14.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    CLANG_ENABLE_MODULES: YES
+    ENABLE_HARDENED_RUNTIME: YES
+
+targets:
+  WaveletMac:
+    type: application
+    platform: macOS
+    sources:
+      - path: WaveletMac
+      - path: Shared/Models.swift
+      - path: Shared/Resources
+        buildPhase: resources
+      - path: docs/电台目录翻译.json
+        buildPhase: resources
+      - path: Assets/WaveletAssets.xcassets
+        buildPhase: resources
+      - path: Fonts
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mythmedia.waveletmac
+        PRODUCT_NAME: Wavelet
+        PRODUCT_MODULE_NAME: WaveletMac
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Wavelet
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.music
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: ""
+      configs:
+        Debug:
+          EXCLUDED_SOURCE_FILE_NAMES: stations.json
+        Release:
+          EXCLUDED_SOURCE_FILE_NAMES: stations-candidates.json
+    scheme:
+      testTargets:
+        - WaveletMacTests
+
+  WaveletMacTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: WaveletMacTests
+      - path: Shared/Resources
+        buildPhase: resources
+      - path: docs/电台目录翻译.json
+        buildPhase: resources
+    dependencies:
+      - target: WaveletMac
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.mythmedia.waveletmac.tests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Wavelet.app/Contents/MacOS/Wavelet"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+
+schemes:
+  WaveletMac:
+    build:
+      targets:
+        WaveletMac: all
+        WaveletMacTests: [test]
+    test:
+      targets:
+        - WaveletMacTests
+      gatherCoverageData: true
