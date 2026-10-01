@@ -153,7 +153,7 @@ struct TransparentWindowConfigurator: NSViewRepresentable {
         guard let window else { return }
         configuredWindow = window
 
-        window.styleMask = [.borderless, .fullSizeContentView]
+        window.styleMask = [.borderless, .fullSizeContentView, .miniaturizable]
         window.titleVisibility = .hidden
         window.titlebarAppearsTransparent = true
         window.isOpaque = false

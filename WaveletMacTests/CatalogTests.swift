@@ -161,4 +161,20 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(NSApplication.shared.windows.count, count)
         XCTAssertTrue(TransparentWindowConfigurator.configuredWindow === window)
     }
+
+    @MainActor
+    func testBorderlessReceiverCanMinimizeAndRestore() {
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 100, height: 100), styleMask: [.borderless, .fullSizeContentView, .miniaturizable], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        defer { window.close() }
+        window.orderFront(nil)
+        let minimized = XCTNSNotificationExpectation(name: NSWindow.didMiniaturizeNotification, object: window)
+        window.miniaturize(nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [minimized], timeout: 3), .completed)
+        XCTAssertTrue(window.isMiniaturized)
+        let restored = XCTNSNotificationExpectation(name: NSWindow.didDeminiaturizeNotification, object: window)
+        window.deminiaturize(nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [restored], timeout: 3), .completed)
+        XCTAssertFalse(window.isMiniaturized)
+    }
 }

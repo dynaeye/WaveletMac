@@ -165,6 +165,7 @@ enum MacLocalization {
     static let nativeLanguageNames = ["繁體中文": "繁體中文", "简体中文": "简体中文", "英文": "English", "日文": "日本語", "韩文": "한국어", "泰文": "ไทย", "西班牙语": "Español", "阿拉伯文": "العربية"]
     // Each row follows languages above: English, Japanese, Korean, Thai, Spanish, Arabic.
     static let translations: [String: [String]] = [
+        "最小化": ["Minimize", "最小化", "최소화", "ย่อหน้าต่าง", "Minimizar", "تصغير"],
         "中国大陆": ["Mainland China", "中国本土", "중국 본토", "จีนแผ่นดินใหญ่", "China continental", "الصين القارية"],
         "香港": ["Hong Kong", "香港", "홍콩", "ฮ่องกง", "Hong Kong", "هونغ كونغ"],
         "澳门": ["Macao", "マカオ", "마카오", "มาเก๊า", "Macao", "ماكاو"],

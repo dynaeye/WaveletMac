@@ -86,6 +86,21 @@ struct ContentView: View {
                 Text("SR-01 / DIGITAL RADIO")
                     .font(.custom("Space Mono", size: 9)).tracking(1)
                     .foregroundStyle(Color(hex: 0x97A28F))
+                Rectangle()
+                    .fill(Color(hex: 0x97A28F).opacity(0.45))
+                    .frame(width: 1, height: 12)
+                Button {
+                    TransparentWindowConfigurator.configuredWindow?.miniaturize(nil)
+                } label: {
+                    Image(systemName: "minus")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(Color(hex: 0x97A28F))
+                        .frame(width: 22, height: 24)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(t("最小化"))
+                .help(t("最小化"))
             }
             .frame(minHeight: 24)
 
@@ -163,7 +178,7 @@ struct ContentView: View {
         .padding(18)
         .background(MacDesign.forest, in: RoundedRectangle(cornerRadius: 30, style: .continuous))
         .overlay(alignment: .top) {
-            WindowDragArea().frame(height: 52)
+            WindowDragArea().frame(height: 52).padding(.trailing, 56)
         }
     }
 
