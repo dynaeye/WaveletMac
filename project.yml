@@ -47,6 +47,10 @@ targets:
           EXCLUDED_SOURCE_FILE_NAMES: stations.json
         Release:
           EXCLUDED_SOURCE_FILE_NAMES: stations-candidates.json
+          DEVELOPMENT_TEAM: 2Z4FLDWWW9
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: Developer ID Application
+          ENABLE_TESTABILITY: NO
     scheme:
       testTargets:
         - WaveletMacTests

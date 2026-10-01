@@ -18,7 +18,8 @@ struct CoreChecks {
         let stations = catalog.stations.sorted(by: Search.directoryOrder)
         precondition(zip(stations, stations.dropFirst()).allSatisfy { !Search.directoryOrder($1, $0) })
         let release = try JSONDecoder().decode(StationCatalog.self, from: Data(contentsOf: URL(fileURLWithPath: "Shared/Resources/stations.json")))
-        precondition(release.validation == "mac-verified" || release.stations.isEmpty)
+        precondition(release.validation == "web-candidate")
+        precondition(release.stations == catalog.stations)
         let region = "cn"
         let baseline = ListeningHistory.top(stations, region: region, counts: [:])
         precondition(baseline.count == 4 && baseline.allSatisfy { $0.region == region })

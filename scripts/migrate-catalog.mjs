@@ -4,6 +4,18 @@ import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+// Promote the exact approved local catalog without re-fetching or changing sources.
+if (process.argv.includes('--sync-release')) {
+  const dir = path.join(root, 'Shared/Resources');
+  const catalog = JSON.parse(fs.readFileSync(path.join(dir, 'stations-candidates.json'), 'utf8'));
+  assert.equal(catalog.schemaVersion, 1);
+  assert.ok(catalog.stations.length > 0);
+  assert.equal(new Set(catalog.stations.map(s => s.id)).size, catalog.stations.length);
+  assert.ok(catalog.stations.every(s => s.streams.length > 0));
+  fs.writeFileSync(path.join(dir, 'stations.json'), JSON.stringify(catalog, null, 2) + '\n');
+  console.log(JSON.stringify({ release: catalog.stations.length, validation: catalog.validation }));
+  process.exit(0);
+}
 const source = fs.readFileSync(path.resolve(root, '../radio-site/dist/stations.js'), 'utf8');
 const raw = JSON.parse(source.match(/window\.STATIONS\s*=\s*(\[[\s\S]*\]);?\s*$/)[1]);
 const meta = JSON.parse(source.match(/window\.CATALOG_META\s*=\s*([^\n]+);/)[1]);
@@ -21,17 +33,11 @@ const stations = raw.filter(s => s.status !== 'external').flatMap(s => {
     official: s.official || '', source: s.source || '', streams }] : [];
 });
 assert.equal(new Set(stations.map(s => s.id)).size, stations.length);
-const validationPath = path.join(root, 'docs/native-validation.json');
-const validations = JSON.parse(fs.readFileSync(validationPath, 'utf8'));
-const approved = new Set(validations.filter(v => v.result === 'passed' && v.device?.startsWith('Mac') &&
-  v.os && v.testedAt && v.durationSeconds >= 300).map(v => v.url));
-const release = stations.flatMap(s => {
-  const streams = s.streams.filter(l => approved.has(l.url));
-  return streams.length ? [{ ...s, streams }] : [];
-});
+// Release uses the same catalog as Debug; native validation remains a separate record.
+const release = stations;
 const dir = path.join(root, 'Shared/Resources');
 fs.mkdirSync(dir, { recursive: true });
-for (const [name, list, validation] of [['stations-candidates', stations, 'web-candidate'], ['stations', release, 'mac-verified']]) {
+for (const [name, list, validation] of [['stations-candidates', stations, 'web-candidate'], ['stations', release, 'web-candidate']]) {
   fs.writeFileSync(path.join(dir, name + '.json'), JSON.stringify({ schemaVersion: 1, sourceUpdatedAt: meta.updatedAt, validation, stations: list }, null, 2) + '\n');
 }
 console.log(JSON.stringify({ source: raw.length, candidates: stations.length, streams: stations.reduce((n,s) => n+s.streams.length,0), release: release.length,

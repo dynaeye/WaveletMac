@@ -16,9 +16,11 @@ Wavelet 的原生 macOS 版本仓库。工程采用 Swift 6、SwiftUI 与 AVFoun
 
 ## 当前状态
 
-2026-10-01：用户确认当前 Mac 版本为最终版本，固定 App 路径为 `/Users/dynasty/workspace/radio/Mac/Final/Wavelet.app`。该 App 保留已确认的当前构建与 1,519 个候选电台，不切换到空目录的 Release 构建。最终 App 不纳入 Git；源码和后续维护工程保留，旧测试构建移至废纸篓。
+2026-10-02：用户确认的最终 App 位于 `/Users/dynasty/workspace/radio/Mac/Final/Wavelet.app`，已完成 Developer ID 签名与 Apple 公证，兼容 arm64、x86_64 和 macOS 15+。最终 DMG 位于 `Final/Wavelet-1.0.dmg`，已单独通过 Apple 公证并 stapled；Gatekeeper 接受 DMG 和其中 app。归档保留在 `Final/Wavelet-1.0.xcarchive`。最终 App、DMG 与归档不纳入 Git；源码和后续维护工程保留。
 
-已创建 `WaveletMac.xcodeproj`，Debug App 可编译，目录与搜索测试通过。Debug 使用 1,519 个候选电台；Release 继续只读取 Mac 原生验证目录，当前为 0 台。播放器不会在启动时自动发声。
+已创建 `WaveletMac.xcodeproj`。Debug 与 Release 使用相同的 1,519 个电台数据，仍如实标记为 `web-candidate`，不代表全部完成 Mac 原生播放验证；验证记录另存 `docs/native-validation.json`。香港筛选统一为分组“全部 / 香港”、城市仅“全部”，所有语言一致。默认不自动播放，用户可在设置中开启。
+
+仅将当前确认的候选目录同步到 Release（不重新迁移来源）：`node scripts/migrate-catalog.mjs --sync-release`。
 
 ## 本地验证
 

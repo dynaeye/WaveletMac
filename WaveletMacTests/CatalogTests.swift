@@ -18,11 +18,13 @@ final class CatalogTests: XCTestCase {
         XCTAssertTrue(catalog.stations.allSatisfy { !$0.streams.isEmpty })
     }
 
-    func testReleaseCatalogIsMacVerifiedAndEmptyUntilNativeValidation() throws {
+    func testReleaseCatalogMatchesApprovedCurrentCatalogWithoutClaimingNativeValidation() throws {
         let catalog = try StationCatalog.load(bundle: resourceBundle, filename: "stations")
-
-        XCTAssertEqual(catalog.validation, "mac-verified")
-        XCTAssertTrue(catalog.stations.isEmpty)
+        let candidates = try StationCatalog.load(bundle: resourceBundle, filename: "stations-candidates")
+        XCTAssertEqual(catalog.validation, "web-candidate")
+        XCTAssertEqual(catalog.stations.count, 1_519)
+        XCTAssertEqual(catalog.stations, candidates.stations)
+        XCTAssertEqual(catalog.sourceUpdatedAt, candidates.sourceUpdatedAt)
     }
 
     func testSearchMatchesTraditionalSimplifiedAndMetadata() throws {
