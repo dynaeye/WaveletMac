@@ -24,6 +24,8 @@ final class PlaybackEngine: ObservableObject {
     @Published private(set) var state: PlaybackState = .ready
     @Published private(set) var line = 0
     @Published private(set) var errorMessage: String?
+    @Published private(set) var sleepDeadline: Date?
+    @Published private(set) var now = Date()
 
     var volume: Float {
         didSet {
@@ -111,6 +113,12 @@ final class PlaybackEngine: ObservableObject {
         updateNowPlaying()
     }
 
+    func updateStationMetadata(_ station: Station) {
+        guard self.station?.id == station.id else { return }
+        self.station = station
+        updateNowPlaying()
+    }
+
     func select(_ station: Station, line: Int) {
         stopCurrentItem()
         restore(station, line: line)
@@ -142,6 +150,21 @@ final class PlaybackEngine: ObservableObject {
         guard let station, station.streams.indices.contains(index) else { return }
         line = index
         play()
+    }
+
+    func setSleep(minutes: Int) {
+        sleepDeadline = Date().addingTimeInterval(Double(minutes * 60))
+        now = Date()
+    }
+
+    func cancelSleep() {
+        sleepDeadline = nil
+    }
+
+    var sleepRemaining: String? {
+        guard let sleepDeadline else { return nil }
+        let seconds = max(0, Int(ceil(sleepDeadline.timeIntervalSince(now))))
+        return String(format: "%02d:%02d", seconds / 60, seconds % 60)
     }
 
     private func connect(_ index: Int) {
@@ -194,6 +217,12 @@ final class PlaybackEngine: ObservableObject {
     }
 
     private func tick() {
+        now = Date()
+        if let sleepDeadline, sleepDeadline <= now {
+            self.sleepDeadline = nil
+            pause()
+            return
+        }
         guard state.isActive, let item = player.currentItem else { return }
         if item.status == .failed {
             retryNextLine()

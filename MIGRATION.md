@@ -35,7 +35,7 @@
 
 ## 建议开发顺序
 
-1. 建立 macOS 14+ SwiftUI App，产品名 `WaveletMac`，确定最终 Bundle ID。
+1. 建立 macOS 15+ SwiftUI App，产品名 `WaveletMac`，确定最终 Bundle ID。
 2. 将 `Shared/Models.swift`、`Shared/Resources`、`docs/电台目录翻译.json`、`Assets` 和 `Fonts` 加入 target，先完成目录解码与搜索测试。
 3. 建立 macOS 专用播放引擎，保留真实状态、20 秒无进度超时和最多 3 条线路重试。
 4. 将 `RadioStore` 迁移到共享层，验证 UserDefaults 持久化键和 iOS 版是否需要互通或独立。

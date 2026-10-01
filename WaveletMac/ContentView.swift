@@ -1,279 +1,553 @@
 import AppKit
 import SwiftUI
 
+private enum MacDesign {
+    static let paper = Color(hex: 0xEDE7DA)
+    static let card = Color(hex: 0xF8F4EB)
+    static let forest = Color(hex: 0x2E3A2E)
+    static let amber = Color(hex: 0xEAB96A)
+    static let ink = Color(hex: 0x28281F)
+    static let line = Color(hex: 0xDED6C6)
+    static let muted = Color(hex: 0x918D80)
+    static let bottomLogo: NSImage = {
+        guard
+            let url = Bundle.main.url(forResource: "wavelet-logo-white3", withExtension: "png"),
+            let image = NSImage(contentsOf: url)
+        else { return NSImage() }
+        return image
+    }()
+}
+
 struct ContentView: View {
-    enum Drawer: Equatable {
-        case favorites
-        case directory
-    }
+    enum Drawer: Equatable { case favorites, directory, settings }
 
     @ObservedObject var store: RadioCatalogStore
     @ObservedObject private var player: PlaybackEngine
     @State private var drawer: Drawer?
     @State private var showsPlaybackStatus = false
+    private let receiverHeight: CGFloat = 542
 
     init(store: RadioCatalogStore) {
         self.store = store
         player = store.player
     }
 
-    var body: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                radioPanel
-
-                if let drawer {
-                    Divider()
-                    drawerView(drawer)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                }
-            }
-
-            if showsPlaybackStatus {
-                playbackStatusOverlay
-                    .transition(.scale(scale: 0.96).combined(with: .opacity))
-                    .zIndex(1)
-            }
-        }
-        .background(Color(nsColor: .windowBackgroundColor))
-        .animation(.snappy(duration: 0.24), value: drawer)
-        .alert("无法加载电台目录", isPresented: loadErrorBinding) {
-            Button("关闭", role: .cancel) { }
-        } message: {
-            Text(store.loadError ?? "未知错误")
-        }
+    private func t(_ key: String) -> String { store.text(key) }
+    private func countText(_ key: String, _ count: Int) -> String {
+        MacLocalization.format(key, count: count, language: store.interfaceLanguage)
     }
 
-    private var radioPanel: some View {
-        VStack(spacing: 18) {
+    var body: some View {
+        ZStack(alignment: .top) {
+            receiver
+                .frame(height: receiverHeight, alignment: .top)
+                .transaction { transaction in
+                    transaction.animation = nil
+                }
+                .overlay {
+                    if showsPlaybackStatus {
+                        playbackStatusOverlay
+                            .transition(.scale(scale: 0.96).combined(with: .opacity))
+                    }
+                }
+                .zIndex(1)
+
+        }
+        .frame(height: receiverHeight, alignment: .top)
+        .background {
+            DrawerWindowPresenter(
+                isPresented: drawer != nil,
+                height: drawerHeight,
+                content: AnyView(Group {
+                    if let drawer {
+                        drawerView(drawer)
+                            .preferredColorScheme(preferredColorScheme)
+                            .environment(\.locale, store.interfaceLocale)
+                    }
+                })
+            )
+        }
+        .background(TransparentWindowConfigurator())
+        .background(Color.clear)
+        .containerBackground(.clear, for: .window)
+        .preferredColorScheme(preferredColorScheme)
+        .environment(\.locale, store.interfaceLocale)
+        .animation(.easeInOut(duration: 0.18), value: showsPlaybackStatus)
+        .alert(t("无法加载电台目录"), isPresented: loadErrorBinding) {
+            Button(t("关闭"), role: .cancel) { }
+        } message: { Text(t(store.loadError ?? "未知错误")) }
+    }
+
+    private var receiver: some View {
+        VStack(spacing: 14) {
             HStack {
-                Image("WaveletHeaderLogo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 125, height: 50)
-                    .accessibilityLabel("Wavelet")
-
+                Text("WAVELET").font(.custom("Space Mono", size: 15).weight(.bold)).tracking(3)
                 Spacer()
-
-                Text(player.state.rawValue)
-                    .font(.custom("Space Mono", size: 11))
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(.secondary.opacity(0.1), in: Capsule())
+                Text("SR-01 / DIGITAL RADIO")
+                    .font(.custom("Space Mono", size: 9)).tracking(1)
+                    .foregroundStyle(Color(hex: 0x97A28F))
             }
+            .frame(minHeight: 24)
 
-            display
+            Button { showsPlaybackStatus = true } label: { tuningScreen }
+                .buttonStyle(.plain)
+                .accessibilityLabel(t("查看播放状态"))
+
+            streamSelector
+
+            HStack {
+                Button { store.step(-1) } label: {
+                    Image(systemName: "backward.end").font(.system(size: 22, weight: .medium)).frame(width: 52, height: 52)
+                }
+                Spacer()
+                Button { player.toggle() } label: {
+                    Image(systemName: player.state.isActive ? "pause" : "play")
+                        .font(.system(size: 27, weight: .semibold)).foregroundStyle(MacDesign.amber)
+                        .frame(width: 68, height: 68)
+                        .background(Color(hex: 0x222D22), in: Circle())
+                        .overlay(Circle().strokeBorder(.white.opacity(0.1)))
+                }
+                .disabled(player.station == nil)
+                .accessibilityLabel(t(player.state.isActive ? "暂停播放" : "开始收听"))
+                Spacer()
+                Button { store.step(1) } label: {
+                    Image(systemName: "forward.end").font(.system(size: 22, weight: .medium)).frame(width: 52, height: 52)
+                }
+            }
+            .buttonStyle(.plain)
 
             HStack(spacing: 12) {
-                drawerButton(title: "我的收藏", systemImage: "heart.fill", drawer: .favorites)
-
-                Button {
-                    player.toggle()
-                } label: {
-                    Image(systemName: player.state.isActive ? "pause.fill" : "play.fill")
-                        .font(.system(size: 20, weight: .semibold))
-                        .frame(width: 52, height: 52)
-                }
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.circle)
-                .disabled(player.station == nil)
-                .help(player.state.isActive ? "暂停" : "播放")
-
-                drawerButton(title: "电台列表", systemImage: "list.bullet", drawer: .directory)
+                Image(systemName: "speaker.wave.1")
+                Slider(value: Binding(get: { Double(player.volume) }, set: { player.volume = Float($0) }), in: 0...1)
+                    .tint(MacDesign.amber)
+                    .environment(\.controlActiveState, .active)
+                    .accessibilityLabel(t("音量"))
+                Image(systemName: "speaker.wave.2")
             }
-        }
-        .padding(24)
-    }
+            .foregroundStyle(Color(hex: 0x97A28F))
 
-    private var display: some View {
-        VStack(spacing: 6) {
-            Text(player.station?.name ?? store.selectedStation?.name ?? "Wavelet")
-                .font(.custom("Archivo", size: 24).weight(.bold))
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-            Text(player.station?.subtitle ?? store.selectedStation?.subtitle ?? "选择一个电台")
-                .font(.custom("Inter", size: 13))
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-            Text(statusCode)
-                .font(.custom("Space Mono", size: 11))
-                .tracking(2)
-                .foregroundStyle(.orange)
-                .padding(.top, 5)
-        }
-        .frame(maxWidth: .infinity, minHeight: 104)
-        .padding(.horizontal, 20)
-        .background(
-            LinearGradient(
-                colors: [Color.black.opacity(0.92), Color(red: 0.10, green: 0.12, blue: 0.12)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ),
-            in: RoundedRectangle(cornerRadius: 14, style: .continuous)
-        )
-        .foregroundStyle(.white)
-        .overlay {
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(.white.opacity(0.12))
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            showsPlaybackStatus = true
-        }
-    }
+            Rectangle().fill(.white.opacity(0.12)).frame(height: 1)
 
-    private func drawerButton(title: String, systemImage: String, drawer target: Drawer) -> some View {
-        Button {
-            drawer = drawer == target ? nil : target
-        } label: {
-            Label(title, systemImage: systemImage)
-                .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.bordered)
-        .controlSize(.large)
-    }
-
-    @ViewBuilder
-    private func drawerView(_ drawer: Drawer) -> some View {
-        VStack(spacing: 12) {
-            HStack {
-                Text(drawer == .favorites ? "我的收藏" : "电台列表")
-                    .font(.custom("Archivo", size: 17).weight(.semibold))
+            HStack(spacing: 9) {
+                Circle().fill(player.state == .failed ? .red : MacDesign.amber).frame(width: 7, height: 7)
+                Text(t(player.state.rawValue)).font(.custom("Noto Sans SC", size: 12))
                 Spacer()
-                if drawer == .directory {
-                    Text("\(store.filteredStations.count) 个电台")
-                        .font(.custom("Inter", size: 12))
-                        .foregroundStyle(.secondary)
+                if let station = player.station {
+                    Button { store.toggleFavorite(station) } label: {
+                        Label(t("收藏"), systemImage: store.isFavorite(station) ? "star.fill" : "star")
+                            .foregroundStyle(store.isFavorite(station) ? MacDesign.amber : Color(hex: 0xC4CDBE))
+                    }.buttonStyle(.plain)
                 }
-                Button {
-                    self.drawer = nil
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
-                .keyboardShortcut(.cancelAction)
-                .accessibilityLabel("关闭抽屉")
+                sleepMenu(foreground: Color(hex: 0xC4CDBE))
+            }
+            .foregroundStyle(Color(hex: 0xC4CDBE))
+            .font(.custom("Noto Sans SC", size: 12)).frame(minHeight: 28)
+
+            if let error = player.errorMessage {
+                Text(t(error)).font(.custom("Noto Sans SC", size: 11)).foregroundStyle(MacDesign.amber).lineLimit(2)
             }
 
-            if drawer == .directory {
-                TextField("搜索电台、地区、城市或分类", text: $store.searchText)
-                    .textFieldStyle(.roundedBorder)
+            HStack(spacing: 6) {
+                receiverDrawerButton("我的收藏", icon: "heart.fill", target: .favorites)
+                receiverDrawerButton("电台列表", icon: "list.bullet", target: .directory)
+                receiverDrawerButton("设置", icon: "gearshape.fill", target: .settings)
+                Spacer(minLength: 12)
+                Image(nsImage: MacDesign.bottomLogo)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 90, height: 20)
+                    .accessibilityLabel("Wavelet")
             }
-
-            stationList(drawer == .favorites ? store.favoriteStations : store.filteredStations)
         }
-        .padding(20)
-        .frame(height: drawerHeight)
-        .background(Color(nsColor: .controlBackgroundColor))
+        .foregroundStyle(MacDesign.card)
+        .padding(18)
+        .background(MacDesign.forest, in: RoundedRectangle(cornerRadius: 30, style: .continuous))
+        .overlay(alignment: .top) {
+            WindowDragArea().frame(height: 52)
+        }
+    }
+
+    private var tuningScreen: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack { Text("INTERNET RADIO"); Spacer(); Text(statusCode) }
+                .font(.custom("Space Mono", size: 9).weight(.bold)).tracking(1)
+            Rectangle().fill(MacDesign.ink.opacity(0.25)).frame(height: 1)
+            HStack(alignment: .lastTextBaseline, spacing: 10) {
+                Text(player.station.map { "\(t($0.regionName)) / \($0.language)" } ?? t("华语广播"))
+                    .font(.custom("Noto Sans SC", size: 11))
+                Spacer(minLength: 8)
+                HStack(alignment: .lastTextBaseline, spacing: 4) {
+                    Text(channelNumber).font(.custom("Inter", size: 30))
+                    Text("CH").font(.custom("Space Mono", size: 8).weight(.bold))
+                }
+            }
+            Text(player.station?.name ?? t("选择电台，开始收听"))
+                .font(.custom("Noto Sans SC", size: 22).weight(.bold)).lineLimit(1).minimumScaleFactor(0.7)
+                .offset(y: -4)
+            VStack(spacing: 7) {
+                HStack {
+                    ForEach(["01", "03", "06", "09", "12"], id: \.self) { value in
+                        Text(value); if value != "12" { Spacer() }
+                    }
+                }.font(.custom("Space Mono", size: 8))
+                GeometryReader { proxy in
+                    Canvas { context, size in
+                        for tick in 0...36 {
+                            let x = CGFloat(tick) / 36 * size.width
+                            var path = Path(); path.move(to: CGPoint(x: x, y: tick % 3 == 0 ? 0 : 5)); path.addLine(to: CGPoint(x: x, y: size.height))
+                            context.stroke(path, with: .color(MacDesign.ink.opacity(0.35)), lineWidth: 1)
+                        }
+                    }
+                    Capsule().fill(MacDesign.forest).frame(width: 2, height: 23).offset(x: proxy.size.width * needlePosition, y: -4)
+                }.frame(height: 17)
+            }
+            HStack {
+                Text(player.station?.category ?? t("华语广播")); Spacer()
+                TimelineView(.periodic(from: .now, by: 60)) { context in
+                    Text(context.date, format: .dateTime.hour().minute()).font(.custom("Space Mono", size: 11))
+                }
+            }.font(.custom("Noto Sans SC", size: 11))
+        }
+        .foregroundStyle(Color(hex: 0x493B1F)).padding(15)
+        .background(LinearGradient(colors: [Color(hex: 0xF3D293), MacDesign.amber], startPoint: .top, endPoint: .bottom), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    private var streamSelector: some View {
+        HStack(spacing: 10) {
+            Label(t("播放线路"), systemImage: "point.3.connected.trianglepath.dotted")
+                .font(.custom("Noto Sans SC", size: 12).weight(.medium))
+            Spacer()
+            if let station = player.station, !station.streams.isEmpty {
+                StreamLinePicker(
+                    titles: station.streams.enumerated().map { store.lineTitle($0.offset, format: $0.element.format) },
+                    selection: player.line,
+                    accessibilityTitle: t("播放线路"),
+                    onSelect: player.switchLine
+                )
+                .fixedSize(horizontal: true, vertical: false)
+                .frame(maxWidth: 190, alignment: .trailing)
+            } else { Text(t("暂无线路")).foregroundStyle(.secondary) }
+        }
+        .padding(.horizontal, 12).frame(minHeight: 38)
+        .background(.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 10))
+    }
+
+    private func receiverDrawerButton(_ title: String, icon: String, target: Drawer) -> some View {
+        Button { toggleDrawer(target) } label: {
+            Label(t(title), systemImage: icon)
+                .font(.custom("Noto Sans SC", size: 11).weight(.medium))
+                .padding(.horizontal, 4)
+                .frame(height: 32)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(drawer == target ? MacDesign.amber : Color(hex: 0xC4CDBE))
+    }
+
+    private func toggleDrawer(_ target: Drawer) {
+        drawer = drawer == target ? nil : target
+    }
+
+    @ViewBuilder private func drawerView(_ drawer: Drawer) -> some View {
+        VStack(spacing: 12) {
+            drawerHeader(drawer)
+            switch drawer {
+            case .directory: directoryView
+            case .favorites: stationList(store.favoriteStations)
+            case .settings: settingsView
+            }
+        }
+        .padding(18)
+        .frame(height: drawerHeight, alignment: .top)
+        .background(Color(nsColor: .windowBackgroundColor), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .strokeBorder(Color(nsColor: .separatorColor).opacity(0.55))
+        )
+        .shadow(color: .black.opacity(0.1), radius: 14, y: 5)
+    }
+
+    private var directoryView: some View {
+        HStack(alignment: .top, spacing: 12) {
+            VStack(spacing: 8) {
+                TextField(t("搜索电台、地区、城市或分类"), text: $store.searchText)
+                    .textFieldStyle(.roundedBorder)
+                directoryFilters
+                Spacer(minLength: 0)
+            }
+            .frame(width: 210, alignment: .topLeading)
+
+            Divider()
+
+            stationList(store.filteredStations)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    }
+
+    private var directoryFilters: some View {
+        VStack(spacing: 8) {
+            filterPicker("地区", selection: $store.region, options: regionOptions, allTitle: "全部地区")
+                .onChange(of: store.region) {
+                    store.group = ""
+                    store.city = ""
+                    store.category = ""
+                }
+            filterPicker("省市 / 分组", selection: $store.group, options: filterOptions(store.scopedStations.map(\.group)))
+                .onChange(of: store.group) { store.city = "" }
+            filterPicker(
+                "城市",
+                selection: $store.city,
+                options: filterOptions(store.scopedStations.filter { store.group.isEmpty || $0.group == store.group }.map(\.city))
+            )
+            filterPicker("节目类型", selection: $store.category, options: filterOptions(store.scopedStations.map(\.category)))
+        }
+    }
+
+    private var regionOptions: [(value: String, label: String)] {
+        Region.all.compactMap { region in
+            let label = t(region.name)
+            return store.stations.contains { $0.region == region.id } ? (region.id, label) : nil
+        }
+    }
+
+    private func filterOptions(_ values: [String]) -> [(value: String, label: String)] {
+        Array(Set(values.filter { !$0.isEmpty }))
+            .sorted(by: Search.before)
+            .map { ($0, $0) }
+    }
+
+    private func filterPicker(
+        _ title: String,
+        selection: Binding<String>,
+        options: [(value: String, label: String)],
+        allTitle: String = "全部"
+    ) -> some View {
+        HStack(spacing: 6) {
+            Text(t(title)).font(.custom("Noto Sans SC", size: 10).weight(.medium)).foregroundStyle(.secondary)
+            Spacer(minLength: 4)
+            Picker(t(title), selection: selection) {
+                Text(t(allTitle)).tag("")
+                ForEach(options, id: \.value) { option in Text(option.label).tag(option.value) }
+            }
+            .labelsHidden()
+            .frame(maxWidth: 128)
+        }
+        .padding(.horizontal, 10)
+        .frame(minHeight: 34)
+        .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 9))
+        .overlay(
+            RoundedRectangle(cornerRadius: 9)
+                .strokeBorder(Color(nsColor: .separatorColor).opacity(0.55))
+        )
+    }
+
+    private func drawerHeader(_ drawer: Drawer) -> some View {
+        HStack {
+            Text(drawerTitle(drawer)).font(.custom("Noto Sans SC", size: 16).weight(.bold))
+            Spacer()
+            if drawer == .directory {
+                Text(countText("个电台", store.filteredStations.count)).font(.custom("Inter", size: 11)).foregroundStyle(MacDesign.muted)
+            }
+            Button { self.drawer = nil } label: { Image(systemName: "xmark.circle.fill") }
+                .buttonStyle(.plain).foregroundStyle(MacDesign.muted).keyboardShortcut(.cancelAction)
+        }
+    }
+
+    private var settingsView: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+                settingsSection("播放") {
+                    VStack(spacing: 10) {
+                        HStack {
+                            Label(t("音量"), systemImage: "speaker.wave.2")
+                            Slider(value: Binding(get: { Double(player.volume) }, set: { player.volume = Float($0) }), in: 0...1)
+                                .tint(MacDesign.amber)
+                                .environment(\.controlActiveState, .active)
+                        }
+                        Divider()
+                        HStack {
+                            Label(t("睡眠定时"), systemImage: "timer")
+                            Spacer()
+                            sleepMenu(foreground: .primary, showsIcon: false, idleTitle: "未设置")
+                        }
+                        Divider()
+                        Toggle(t("启动时自动播放"), isOn: $store.autoplayEnabled)
+                    }
+                }
+                settingsSection("通用") {
+                    VStack(spacing: 10) {
+                        settingPicker("主题", icon: "sun.max", value: store.themePreference, options: ["浅色", "深色", "跟随系统"], onSelect: store.setTheme)
+                        Divider()
+                        settingPicker("语言", icon: "character", value: store.languagePreference, options: ["跟随系统", "繁體中文", "简体中文", "英文", "日文", "韩文", "泰文", "西班牙语", "阿拉伯文"], onSelect: store.setLanguage)
+                    }
+                }
+                Divider()
+                HStack {
+                    Spacer()
+                    Button(t("退出 Wavelet")) {
+                        NSApplication.shared.terminate(nil)
+                    }
+                    .buttonStyle(.bordered)
+                }
+            }
+        }
+    }
+
+    private func settingsSection<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 7) {
+            Text(t(title)).font(.custom("Noto Sans SC", size: 12).weight(.bold)).foregroundStyle(.secondary)
+            content()
+                .padding(12)
+                .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .strokeBorder(Color(nsColor: .separatorColor).opacity(0.55))
+                )
+        }
+    }
+
+    private func settingPicker(_ title: String, icon: String, value: String, options: [String], onSelect: @escaping @MainActor @Sendable (String) -> Void) -> some View {
+        HStack {
+            Label(t(title), systemImage: icon); Spacer()
+            Picker(t(title), selection: Binding(get: { value }, set: onSelect)) {
+                ForEach(options, id: \.self) { Text(t($0)).tag($0) }
+            }.labelsHidden().frame(maxWidth: 150)
+        }
+    }
+
+    private func sleepMenu(foreground: Color, showsIcon: Bool = true, idleTitle: String = "睡眠") -> some View {
+        Menu {
+            ForEach([30, 60, 120, 180], id: \.self) { minutes in Button(countText("分钟后停止", minutes)) { player.setSleep(minutes: minutes) } }
+            if player.sleepDeadline != nil { Divider(); Button(t("取消定时")) { player.cancelSleep() } }
+        } label: {
+            Group {
+                if showsIcon {
+                    Label(player.sleepRemaining ?? t(idleTitle), systemImage: "moon")
+                } else {
+                    Text(player.sleepRemaining ?? t(idleTitle))
+                }
+            }
+            .foregroundStyle(player.sleepDeadline == nil ? foreground : MacDesign.amber)
+        }
+        .menuStyle(.borderlessButton)
+        .tint(player.sleepDeadline == nil ? foreground : MacDesign.amber)
+        .environment(\.controlActiveState, .active)
     }
 
     private func stationList(_ stations: [Station]) -> some View {
         Group {
             if stations.isEmpty {
-                ContentUnavailableView(
-                    drawer == .favorites ? "还没有收藏" : "没有匹配的电台",
-                    systemImage: drawer == .favorites ? "heart" : "magnifyingglass"
-                )
+                ContentUnavailableView(t(drawer == .favorites ? "还没有收藏" : "没有匹配的电台"), systemImage: drawer == .favorites ? "heart" : "magnifyingglass")
             } else {
                 List(stations, selection: $store.selectedStationID) { station in
                     HStack(spacing: 10) {
+                        Image(systemName: player.station?.id == station.id ? "waveform" : "antenna.radiowaves.left.and.right")
+                            .foregroundStyle(player.station?.id == station.id ? MacDesign.amber : MacDesign.muted)
                         VStack(alignment: .leading, spacing: 3) {
-                            Text(station.name)
-                                .font(.custom("Inter", size: 13).weight(.medium))
-                            Text(station.subtitle)
-                                .font(.custom("Inter", size: 11))
-                                .foregroundStyle(.secondary)
+                            Text(station.name).font(.custom("Noto Sans SC", size: 12).weight(.medium))
+                            Text(store.subtitle(station)).font(.custom("Noto Sans SC", size: 10)).foregroundStyle(MacDesign.muted)
                         }
                         Spacer()
-                        Button {
-                            store.toggleFavorite(station)
-                        } label: {
-                            Image(systemName: store.isFavorite(station) ? "heart.fill" : "heart")
-                                .foregroundStyle(store.isFavorite(station) ? .red : .secondary)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(store.isFavorite(station) ? "取消收藏" : "收藏")
+                        Button { store.toggleFavorite(station) } label: {
+                            Image(systemName: store.isFavorite(station) ? "heart.fill" : "heart").foregroundStyle(store.isFavorite(station) ? .red : MacDesign.muted)
+                        }.buttonStyle(.plain)
                     }
-                    .contentShape(Rectangle())
-                    .onTapGesture { store.select(station) }
-                    .tag(station.id)
-                }
-                .listStyle(.inset)
+                    .contentShape(Rectangle()).onTapGesture { store.select(station) }.tag(station.id)
+                }.listStyle(.inset)
             }
-        }
-    }
-
-    private var loadErrorBinding: Binding<Bool> {
-        Binding(
-            get: { store.loadError != nil },
-            set: { _ in }
-        )
-    }
-
-    private var drawerHeight: CGFloat {
-        let availableHeight = NSScreen.main?.visibleFrame.height ?? 900
-        return min(310, max(180, availableHeight - 360))
-    }
-
-    private var statusCode: String {
-        switch player.state {
-        case .ready: "READY"
-        case .connecting: "CONNECTING"
-        case .buffering: "BUFFERING"
-        case .playing: "LIVE"
-        case .paused: "PAUSED"
-        case .failed: "FAILED"
         }
     }
 
     private var playbackStatusOverlay: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 14) {
             HStack {
-                Text("播放状态")
-                    .font(.custom("Archivo", size: 18).weight(.semibold))
-                Spacer()
-                Button {
-                    showsPlaybackStatus = false
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                }
-                .buttonStyle(.plain)
-                .keyboardShortcut(.cancelAction)
-                .accessibilityLabel("关闭播放状态")
+                Text(t("现在播放")).font(.custom("Noto Sans SC", size: 16).weight(.bold)); Spacer()
+                Button { showsPlaybackStatus = false } label: { Image(systemName: "xmark.circle.fill") }
+                    .buttonStyle(.plain).keyboardShortcut(.cancelAction)
             }
-
             Image(systemName: player.state == .failed ? "exclamationmark.triangle.fill" : "waveform")
-                .font(.system(size: 36))
-                .foregroundStyle(player.state == .failed ? .red : .orange)
-
-            Text(player.state.rawValue)
-                .font(.custom("Inter", size: 16).weight(.semibold))
-            Text(player.errorMessage ?? player.station?.subtitle ?? "尚未选择电台")
-                .font(.custom("Inter", size: 12))
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-
-            if let station = player.station, station.streams.count > 1 {
-                Picker("线路", selection: Binding(
-                    get: { player.line },
-                    set: { player.switchLine($0) }
-                )) {
-                    ForEach(Array(station.streams.enumerated()), id: \.offset) { index, stream in
-                        Text("线路 \(index + 1) · \(stream.format.uppercased())").tag(index)
-                    }
-                }
-                .pickerStyle(.menu)
-            }
+                .font(.system(size: 34)).foregroundStyle(player.state == .failed ? .red : MacDesign.amber)
+            Text(player.station?.name ?? t("尚未选择电台")).font(.custom("Noto Sans SC", size: 18).weight(.bold))
+            Text(t(player.errorMessage ?? player.state.rawValue)).font(.custom("Noto Sans SC", size: 12)).foregroundStyle(.secondary)
+            streamSelector
+            HStack(spacing: 24) {
+                Button { store.step(-1) } label: { Image(systemName: "backward.end.fill") }
+                Button { player.toggle() } label: { Image(systemName: player.state.isActive ? "pause.fill" : "play.fill") }
+                Button { store.step(1) } label: { Image(systemName: "forward.end.fill") }
+            }.buttonStyle(.borderless).font(.title2)
         }
-        .padding(24)
-        .frame(width: 350)
+        .padding(22).frame(width: 380)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .strokeBorder(.primary.opacity(0.12))
-        }
+        .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(.primary.opacity(0.12)))
         .shadow(color: .black.opacity(0.22), radius: 24, y: 10)
+    }
+
+    private var channelNumber: String {
+        store.stations.firstIndex { $0.id == player.station?.id }.map { String(format: "%02d", $0 + 1) } ?? "––"
+    }
+    private var needlePosition: Double {
+        guard let index = store.stations.firstIndex(where: { $0.id == player.station?.id }) else { return 0.45 }
+        return 0.02 + Double(index) / Double(max(1, store.stations.count - 1)) * 0.94
+    }
+    private var statusCode: String {
+        switch player.state { case .ready: "READY"; case .connecting: "CONNECTING"; case .buffering: "BUFFERING"; case .playing: "LIVE"; case .paused: "PAUSED"; case .failed: "FAILED" }
+    }
+    private func drawerTitle(_ drawer: Drawer) -> String {
+        switch drawer { case .favorites: t("我的收藏"); case .directory: t("电台列表"); case .settings: t("设置") }
+    }
+    private var preferredColorScheme: ColorScheme? {
+        switch store.themePreference { case "浅色": .light; case "深色": .dark; default: nil }
+    }
+    private var drawerHeight: CGFloat {
+        let availableHeight = NSScreen.main?.visibleFrame.height ?? 900
+        return min(350, max(220, availableHeight - 560))
+    }
+    private var loadErrorBinding: Binding<Bool> { Binding(get: { store.loadError != nil }, set: { _ in }) }
+}
+
+
+/// SwiftUI's macOS Menu/Picker replaces label fonts with its own control font.
+/// Set the native popup font explicitly so the compact stream label is truly 8 pt.
+private struct StreamLinePicker: NSViewRepresentable {
+    let titles: [String]
+    let selection: Int
+    let accessibilityTitle: String
+    let onSelect: (Int) -> Void
+
+    func makeCoordinator() -> Coordinator { Coordinator(onSelect: onSelect) }
+
+    func makeNSView(context: Context) -> NSPopUpButton {
+        let button = NSPopUpButton(frame: .zero, pullsDown: false)
+        button.controlSize = .small
+        button.font = NSFont(name: "NotoSansSC-Medium", size: 8) ?? .systemFont(ofSize: 8, weight: .medium)
+        button.contentTintColor = NSColor(calibratedRed: 0.97, green: 0.96, blue: 0.92, alpha: 1)
+        button.appearance = NSAppearance(named: .darkAqua)
+        button.target = context.coordinator
+        button.action = #selector(Coordinator.select(_:))
+        return button
+    }
+
+    func updateNSView(_ button: NSPopUpButton, context: Context) {
+        context.coordinator.onSelect = onSelect
+        if button.itemTitles != titles {
+            button.removeAllItems()
+            button.addItems(withTitles: titles)
+        }
+        button.selectItem(at: min(max(selection, 0), max(0, titles.count - 1)))
+        button.setAccessibilityLabel(accessibilityTitle)
+        button.invalidateIntrinsicContentSize()
+    }
+
+    @MainActor final class Coordinator: NSObject {
+        var onSelect: (Int) -> Void
+        init(onSelect: @escaping (Int) -> Void) { self.onSelect = onSelect }
+        @objc func select(_ sender: NSPopUpButton) { onSelect(sender.indexOfSelectedItem) }
+    }
+}
+
+private extension Color {
+    init(hex: UInt) {
+        self.init(red: Double((hex >> 16) & 0xFF) / 255, green: Double((hex >> 8) & 0xFF) / 255, blue: Double(hex & 0xFF) / 255)
     }
 }

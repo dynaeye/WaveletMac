@@ -11,6 +11,7 @@
 		0F695D72E4FE07CDD9008443 /* stations-candidates.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F75E13616163843F0E89D5A /* stations-candidates.json */; };
 		40AF9051462104737DA8143F /* NotoSansSC-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1408CA773B7625451E88DABA /* NotoSansSC-OFL.txt */; };
 		5A2340EFA7B6DA5EACA99CE9 /* Inter.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DF68822DF76D16B822E7E50C /* Inter.ttf */; };
+		5BF55B247BF1FA92CD118DBC /* TransparentWindowConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA6AFE9B595BD62D91DEF4D /* TransparentWindowConfigurator.swift */; };
 		625AE91E2A887AF5BF88E0A1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C52B96363B433168BFAFF5C /* ContentView.swift */; };
 		66A5EFAB5BCA25BE4E9634CB /* stations-candidates.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F75E13616163843F0E89D5A /* stations-candidates.json */; };
 		6FC8942B5AF087C6C2FCA3D4 /* PlaybackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A871290EC8D0469135FCC582 /* PlaybackEngine.swift */; };
@@ -20,6 +21,7 @@
 		9EC3D30183E5A6AE693A9499 /* stations.json in Resources */ = {isa = PBXBuildFile; fileRef = 9057B5F89D8C44B080048F64 /* stations.json */; };
 		ABA92B0833C3E16C1DF53E2F /* stations.json in Resources */ = {isa = PBXBuildFile; fileRef = 9057B5F89D8C44B080048F64 /* stations.json */; };
 		B0336966932181041514B709 /* Archivo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EE2A0153E75BEAD7720C1762 /* Archivo.ttf */; };
+		B053BEE94E1356A2272AFABB /* wavelet-logo-white3.png in Resources */ = {isa = PBXBuildFile; fileRef = 35C940A7F55E1266FBE69C4E /* wavelet-logo-white3.png */; };
 		B0935B6C214DC802490E983F /* CatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40F980520BBB82E1063F5AC9 /* CatalogTests.swift */; };
 		B1B88EEA41A4C44402974498 /* NotoSansSC.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0D3CB82C441D5FA8EA36706C /* NotoSansSC.ttf */; };
 		B65F8D1EA824A569CA7E7371 /* SpaceMono-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 585EC4D4233C0A457EEC22C7 /* SpaceMono-OFL.txt */; };
@@ -48,6 +50,8 @@
 		13A982A61FDF19C25B8D0946 /* WaveletAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = WaveletAssets.xcassets; sourceTree = "<group>"; };
 		1408CA773B7625451E88DABA /* NotoSansSC-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "NotoSansSC-OFL.txt"; sourceTree = "<group>"; };
 		1C52B96363B433168BFAFF5C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2FA6AFE9B595BD62D91DEF4D /* TransparentWindowConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransparentWindowConfigurator.swift; sourceTree = "<group>"; };
+		35C940A7F55E1266FBE69C4E /* wavelet-logo-white3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wavelet-logo-white3.png"; sourceTree = "<group>"; };
 		40F980520BBB82E1063F5AC9 /* CatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogTests.swift; sourceTree = "<group>"; };
 		585EC4D4233C0A457EEC22C7 /* SpaceMono-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "SpaceMono-OFL.txt"; sourceTree = "<group>"; };
 		5BECEDB52E884949B826C408 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
@@ -105,6 +109,7 @@
 				5BECEDB52E884949B826C408 /* MenuBarView.swift */,
 				A871290EC8D0469135FCC582 /* PlaybackEngine.swift */,
 				7CB563B5E8BBB15FA118F3BC /* RadioCatalogStore.swift */,
+				2FA6AFE9B595BD62D91DEF4D /* TransparentWindowConfigurator.swift */,
 				F812A2EBB4704F2F87878FD0 /* WaveletMacApp.swift */,
 			);
 			path = WaveletMac;
@@ -130,6 +135,7 @@
 		7F75CD64F6495C78B6DBD21F = {
 			isa = PBXGroup;
 			children = (
+				35C940A7F55E1266FBE69C4E /* wavelet-logo-white3.png */,
 				8CA455ECFDEBAC69C8D20DC6 /* Assets */,
 				3EF2BE7344E92EB1C1B2E529 /* docs */,
 				D2F1408D6AD607EA15597040 /* Fonts */,
@@ -258,6 +264,7 @@
 				08B224EB52F8DEB07FF5CE1E /* WaveletAssets.xcassets in Resources */,
 				0F695D72E4FE07CDD9008443 /* stations-candidates.json in Resources */,
 				9EC3D30183E5A6AE693A9499 /* stations.json in Resources */,
+				B053BEE94E1356A2272AFABB /* wavelet-logo-white3.png in Resources */,
 				F3425A2081006B463EF6E332 /* 电台目录翻译.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -286,6 +293,7 @@
 				FD2882144CD0B5A214D536DF /* Models.swift in Sources */,
 				6FC8942B5AF087C6C2FCA3D4 /* PlaybackEngine.swift in Sources */,
 				759CCF862D0C222C86B4B624 /* RadioCatalogStore.swift in Sources */,
+				5BF55B247BF1FA92CD118DBC /* TransparentWindowConfigurator.swift in Sources */,
 				F05809620A42DDA1D52083C6 /* WaveletMacApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -380,7 +388,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -463,7 +471,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

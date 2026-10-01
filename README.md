@@ -1,6 +1,6 @@
 # WaveletMac
 
-Wavelet 的原生 macOS 版本仓库。工程采用 Swift 6、SwiftUI 与 AVFoundation，最低支持 macOS 14；App 显示名称为 `Wavelet`，Bundle ID 为 `com.mythmedia.waveletmac`。
+Wavelet 的原生 macOS 版本仓库。工程采用 Swift 6、SwiftUI 与 AVFoundation，最低支持 macOS 15；App 显示名称为 `Wavelet`，Bundle ID 为 `com.mythmedia.waveletmac`。
 
 ## 目录
 
