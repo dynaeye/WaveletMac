@@ -26,12 +26,18 @@ final class PlaybackEngine: ObservableObject {
     @Published private(set) var errorMessage: String?
     @Published private(set) var sleepDeadline: Date?
     @Published private(set) var now = Date()
+    let volumeChanges = PassthroughSubject<Float, Never>()
 
     var volume: Float {
         didSet {
             volume = min(1, max(0, volume))
             player.volume = volume
-            defaults.set(volume, forKey: volumeKey)
+            volumeChanges.send(volume)
+            volumeSaveTask?.cancel()
+            volumeSaveTask = Task { @MainActor [weak self] in
+                do { try await Task.sleep(for: .milliseconds(250)) } catch { return }
+                self?.persistVolume()
+            }
         }
     }
 
@@ -44,6 +50,7 @@ final class PlaybackEngine: ObservableObject {
     private var lastProgressAt = Date()
     private var lastPosition = 0.0
     private var ticker: Task<Void, Never>?
+    private var volumeSaveTask: Task<Void, Never>?
     private var remoteCommandTargets: [(MPRemoteCommand, Any)] = []
     private var workspaceObservers: [NSObjectProtocol] = []
     private var audioOutputMonitor: AudioOutputMonitor?
@@ -216,9 +223,18 @@ final class PlaybackEngine: ObservableObject {
         player.replaceCurrentItem(with: nil)
     }
 
+    func persistVolume() {
+        volumeSaveTask?.cancel()
+        volumeSaveTask = nil
+        defaults.set(volume, forKey: volumeKey)
+    }
+
     private func tick() {
-        now = Date()
-        if let sleepDeadline, sleepDeadline <= now {
+        let currentTime = Date()
+        if sleepDeadline != nil, Int(currentTime.timeIntervalSince1970) != Int(now.timeIntervalSince1970) {
+            now = currentTime
+        }
+        if let sleepDeadline, sleepDeadline <= currentTime {
             self.sleepDeadline = nil
             pause()
             return

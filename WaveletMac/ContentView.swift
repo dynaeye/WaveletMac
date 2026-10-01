@@ -24,7 +24,6 @@ struct ContentView: View {
     @ObservedObject var store: RadioCatalogStore
     @ObservedObject private var player: PlaybackEngine
     @State private var drawer: Drawer?
-    @State private var showsPlaybackStatus = false
     private let receiverHeight: CGFloat = 542
 
     init(store: RadioCatalogStore) {
@@ -44,12 +43,6 @@ struct ContentView: View {
                 .transaction { transaction in
                     transaction.animation = nil
                 }
-                .overlay {
-                    if showsPlaybackStatus {
-                        playbackStatusOverlay
-                            .transition(.scale(scale: 0.96).combined(with: .opacity))
-                    }
-                }
                 .zIndex(1)
 
         }
@@ -58,21 +51,19 @@ struct ContentView: View {
             DrawerWindowPresenter(
                 isPresented: drawer != nil,
                 height: drawerHeight,
+                themePreference: store.themePreference,
                 content: AnyView(Group {
                     if let drawer {
                         drawerView(drawer)
-                            .preferredColorScheme(preferredColorScheme)
                             .environment(\.locale, store.interfaceLocale)
                     }
                 })
             )
         }
-        .background(TransparentWindowConfigurator())
+        .background(TransparentWindowConfigurator(themePreference: store.themePreference))
         .background(Color.clear)
         .containerBackground(.clear, for: .window)
-        .preferredColorScheme(preferredColorScheme)
         .environment(\.locale, store.interfaceLocale)
-        .animation(.easeInOut(duration: 0.18), value: showsPlaybackStatus)
         .alert(t("无法加载电台目录"), isPresented: loadErrorBinding) {
             Button(t("关闭"), role: .cancel) { }
         } message: { Text(t(store.loadError ?? "未知错误")) }
@@ -104,9 +95,7 @@ struct ContentView: View {
             }
             .frame(minHeight: 24)
 
-            Button { showsPlaybackStatus = true } label: { tuningScreen }
-                .buttonStyle(.plain)
-                .accessibilityLabel(t("查看播放状态"))
+            tuningScreen
 
             streamSelector
 
@@ -133,7 +122,7 @@ struct ContentView: View {
 
             HStack(spacing: 12) {
                 Image(systemName: "speaker.wave.1")
-                Slider(value: Binding(get: { Double(player.volume) }, set: { player.volume = Float($0) }), in: 0...1)
+                VolumeSlider(player: player, accessibilityTitle: t("音量"))
                     .tint(MacDesign.amber)
                     .environment(\.controlActiveState, .active)
                     .accessibilityLabel(t("音量"))
@@ -340,15 +329,17 @@ struct ContentView: View {
     ) -> some View {
         HStack(spacing: 6) {
             Text(t(title)).font(.custom("Noto Sans SC", size: 10).weight(.medium)).foregroundStyle(.secondary)
-            Spacer(minLength: 4)
-            Picker(t(title), selection: selection) {
-                Text(t(allTitle)).tag("")
-                ForEach(options, id: \.value) { option in Text(option.label).tag(option.value) }
-            }
-            .labelsHidden()
-            .frame(maxWidth: 128)
+                .frame(width: 56, alignment: .leading)
+                .lineLimit(2)
+            DirectoryFilterPicker(
+                title: t(title),
+                options: [(value: "", label: t(allTitle))] + options,
+                selection: selection
+            )
+            .frame(width: 128)
         }
         .padding(.horizontal, 10)
+        .frame(width: 210)
         .frame(minHeight: 34)
         .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 9))
         .overlay(
@@ -360,6 +351,12 @@ struct ContentView: View {
     private func drawerHeader(_ drawer: Drawer) -> some View {
         HStack {
             Text(drawerTitle(drawer)).font(.custom("Noto Sans SC", size: 16).weight(.bold))
+            if drawer == .settings,
+               let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String {
+                Text("v\(version)")
+                    .font(.custom("Inter", size: 11))
+                    .foregroundStyle(.secondary)
+            }
             Spacer()
             if drawer == .directory {
                 Text(countText("个电台", store.filteredStations.count)).font(.custom("Inter", size: 11)).foregroundStyle(MacDesign.muted)
@@ -376,7 +373,7 @@ struct ContentView: View {
                     VStack(spacing: 10) {
                         HStack {
                             Label(t("音量"), systemImage: "speaker.wave.2")
-                            Slider(value: Binding(get: { Double(player.volume) }, set: { player.volume = Float($0) }), in: 0...1)
+                            VolumeSlider(player: player, accessibilityTitle: t("音量"))
                                 .tint(MacDesign.amber)
                                 .environment(\.controlActiveState, .active)
                         }
@@ -399,11 +396,11 @@ struct ContentView: View {
                 }
                 Divider()
                 HStack {
-                    Spacer()
                     Button(t("退出 Wavelet")) {
                         NSApplication.shared.terminate(nil)
                     }
                     .buttonStyle(.bordered)
+                    Spacer()
                 }
             }
         }
@@ -474,30 +471,6 @@ struct ContentView: View {
         }
     }
 
-    private var playbackStatusOverlay: some View {
-        VStack(spacing: 14) {
-            HStack {
-                Text(t("现在播放")).font(.custom("Noto Sans SC", size: 16).weight(.bold)); Spacer()
-                Button { showsPlaybackStatus = false } label: { Image(systemName: "xmark.circle.fill") }
-                    .buttonStyle(.plain).keyboardShortcut(.cancelAction)
-            }
-            Image(systemName: player.state == .failed ? "exclamationmark.triangle.fill" : "waveform")
-                .font(.system(size: 34)).foregroundStyle(player.state == .failed ? .red : MacDesign.amber)
-            Text(player.station?.name ?? t("尚未选择电台")).font(.custom("Noto Sans SC", size: 18).weight(.bold))
-            Text(t(player.errorMessage ?? player.state.rawValue)).font(.custom("Noto Sans SC", size: 12)).foregroundStyle(.secondary)
-            streamSelector
-            HStack(spacing: 24) {
-                Button { store.step(-1) } label: { Image(systemName: "backward.end.fill") }
-                Button { player.toggle() } label: { Image(systemName: player.state.isActive ? "pause.fill" : "play.fill") }
-                Button { store.step(1) } label: { Image(systemName: "forward.end.fill") }
-            }.buttonStyle(.borderless).font(.title2)
-        }
-        .padding(22).frame(width: 380)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(.primary.opacity(0.12)))
-        .shadow(color: .black.opacity(0.22), radius: 24, y: 10)
-    }
-
     private var channelNumber: String {
         store.stations.firstIndex { $0.id == player.station?.id }.map { String(format: "%02d", $0 + 1) } ?? "––"
     }
@@ -511,9 +484,6 @@ struct ContentView: View {
     private func drawerTitle(_ drawer: Drawer) -> String {
         switch drawer { case .favorites: t("我的收藏"); case .directory: t("电台列表"); case .settings: t("设置") }
     }
-    private var preferredColorScheme: ColorScheme? {
-        switch store.themePreference { case "浅色": .light; case "深色": .dark; default: nil }
-    }
     private var drawerHeight: CGFloat {
         let availableHeight = NSScreen.main?.visibleFrame.height ?? 900
         return min(350, max(220, availableHeight - 560))
@@ -522,8 +492,81 @@ struct ContentView: View {
 }
 
 
+/// Native control bounds stay fixed even when the selected title changes.
+private struct DirectoryFilterPicker: NSViewRepresentable {
+    let title: String
+    let options: [(value: String, label: String)]
+    @Binding var selection: String
+
+    func makeCoordinator() -> Coordinator { Coordinator(selection: $selection) }
+
+    func makeNSView(context: Context) -> NSPopUpButton {
+        let button = NSPopUpButton(frame: .zero, pullsDown: false)
+        button.target = context.coordinator
+        button.action = #selector(Coordinator.select(_:))
+        button.cell?.lineBreakMode = .byTruncatingTail
+        button.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        button.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        return button
+    }
+
+    func sizeThatFits(_ proposal: ProposedViewSize, nsView: NSPopUpButton, context: Context) -> CGSize? {
+        CGSize(width: 128, height: nsView.intrinsicContentSize.height)
+    }
+
+    func updateNSView(_ button: NSPopUpButton, context: Context) {
+        context.coordinator.selection = $selection
+        context.coordinator.values = options.map(\.value)
+        let titles = options.map(\.label)
+        if button.itemTitles != titles {
+            button.removeAllItems()
+            button.addItems(withTitles: titles)
+        }
+        button.selectItem(at: options.firstIndex { $0.value == selection } ?? 0)
+        button.setAccessibilityLabel(title)
+    }
+
+    @MainActor final class Coordinator: NSObject {
+        var selection: Binding<String>
+        var values: [String] = []
+        init(selection: Binding<String>) { self.selection = selection }
+        @objc func select(_ sender: NSPopUpButton) {
+            guard values.indices.contains(sender.indexOfSelectedItem) else { return }
+            selection.wrappedValue = values[sender.indexOfSelectedItem]
+        }
+    }
+}
+
+/// Local state tracks every drag without invalidating the entire receiver.
+private struct VolumeSlider: View {
+    let player: PlaybackEngine
+    let accessibilityTitle: String
+    @State private var value: Double
+    @State private var isEditing = false
+
+    init(player: PlaybackEngine, accessibilityTitle: String) {
+        self.player = player
+        self.accessibilityTitle = accessibilityTitle
+        _value = State(initialValue: Double(player.volume))
+    }
+
+    var body: some View {
+        Slider(value: $value, in: 0...1, onEditingChanged: { editing in
+            isEditing = editing
+            if !editing { player.persistVolume() }
+        })
+        .accessibilityLabel(accessibilityTitle)
+        .onChange(of: value) { _, updated in
+            if player.volume != Float(updated) { player.volume = Float(updated) }
+        }
+        .onReceive(player.volumeChanges) { updated in
+            if !isEditing, Float(value) != updated { value = Double(updated) }
+        }
+    }
+}
+
 /// SwiftUI's macOS Menu/Picker replaces label fonts with its own control font.
-/// Set the native popup font explicitly so the compact stream label is truly 8 pt.
+/// Set the native popup font explicitly so the compact stream label is truly 9 pt.
 private struct StreamLinePicker: NSViewRepresentable {
     let titles: [String]
     let selection: Int
@@ -535,7 +578,7 @@ private struct StreamLinePicker: NSViewRepresentable {
     func makeNSView(context: Context) -> NSPopUpButton {
         let button = NSPopUpButton(frame: .zero, pullsDown: false)
         button.controlSize = .small
-        button.font = NSFont(name: "NotoSansSC-Medium", size: 8) ?? .systemFont(ofSize: 8, weight: .medium)
+        button.font = NSFont(name: "NotoSansSC-Medium", size: 9) ?? .systemFont(ofSize: 9, weight: .medium)
         button.contentTintColor = NSColor(calibratedRed: 0.97, green: 0.96, blue: 0.92, alpha: 1)
         button.appearance = NSAppearance(named: .darkAqua)
         button.target = context.coordinator

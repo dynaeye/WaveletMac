@@ -1,10 +1,24 @@
 import AppKit
 import SwiftUI
 
+@MainActor
+enum WindowTheme {
+    static func apply(_ preference: String, to window: NSWindow) {
+        switch preference {
+        case "浅色": window.appearance = NSAppearance(named: .aqua)
+        case "深色": window.appearance = NSAppearance(named: .darkAqua)
+        default: window.appearance = nil
+        }
+        // Inherit from the window, including when returning to system appearance.
+        window.contentView?.appearance = nil
+    }
+}
+
 /// A separate child panel keeps drawer animation out of the receiver's window layout.
 struct DrawerWindowPresenter: NSViewRepresentable {
     var isPresented: Bool
     var height: CGFloat
+    var themePreference: String
     var content: AnyView
 
     func makeCoordinator() -> Coordinator { Coordinator() }
@@ -14,7 +28,7 @@ struct DrawerWindowPresenter: NSViewRepresentable {
     func updateNSView(_ view: NSView, context: Context) {
         let coordinator = context.coordinator
         DispatchQueue.main.async {
-            coordinator.update(parent: view.window, isPresented: isPresented, height: height, content: content)
+            coordinator.update(parent: view.window, isPresented: isPresented, height: height, themePreference: themePreference, content: content)
         }
     }
 
@@ -24,7 +38,7 @@ struct DrawerWindowPresenter: NSViewRepresentable {
         private var host: NSHostingView<AnyView>?
         private var visible = false
 
-        func update(parent: NSWindow?, isPresented: Bool, height: CGFloat, content: AnyView) {
+        func update(parent: NSWindow?, isPresented: Bool, height: CGFloat, themePreference: String, content: AnyView) {
             guard let parent else { return }
             if !isPresented {
                 guard visible, let panel else { return }
@@ -57,6 +71,7 @@ struct DrawerWindowPresenter: NSViewRepresentable {
                 panel = newPanel
             }
             guard let panel else { return }
+            WindowTheme.apply(themePreference, to: panel)
             host?.rootView = AnyView(content.frame(width: target.width, height: height))
             if visible {
                 panel.setFrame(target, display: true)
@@ -83,6 +98,7 @@ private final class DrawerPanel: NSPanel {
 }
 
 struct TransparentWindowConfigurator: NSViewRepresentable {
+    var themePreference: String = "跟随系统"
     @MainActor static weak var configuredWindow: NSWindow?
 
     func makeCoordinator() -> Coordinator {
@@ -94,6 +110,7 @@ struct TransparentWindowConfigurator: NSViewRepresentable {
         let coordinator = context.coordinator
         DispatchQueue.main.async {
             Self.configure(view.window)
+            if let window = view.window { WindowTheme.apply(themePreference, to: window) }
             coordinator.attach(to: view.window)
         }
         return view
@@ -103,6 +120,7 @@ struct TransparentWindowConfigurator: NSViewRepresentable {
         let coordinator = context.coordinator
         DispatchQueue.main.async {
             Self.configure(nsView.window)
+            if let window = nsView.window { WindowTheme.apply(themePreference, to: window) }
             coordinator.attach(to: nsView.window)
         }
     }

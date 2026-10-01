@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import Foundation
 import XCTest
 @testable import WaveletMac
@@ -100,6 +101,44 @@ final class CatalogTests: XCTestCase {
     }
 
     @MainActor
+    func testHongKongStationsUseOneGroupAndNoCityInEveryLanguage() throws {
+        let suiteName = "WaveletMacTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let store = RadioCatalogStore(bundle: resourceBundle, defaults: defaults)
+        let catalog = try StationCatalog.load(bundle: resourceBundle, filename: "stations-candidates")
+        let original = catalog.stations.filter { $0.region == "hk" }
+        XCTAssertEqual(original.count, 26)
+
+        for language in ["简体中文", "繁體中文", "英文", "日文", "韩文", "泰文", "西班牙语", "阿拉伯文"] {
+            store.setLanguage(language)
+            store.region = "hk"
+            store.group = store.text("香港")
+            XCTAssertEqual(Set(store.filteredStations.map(\.id)), Set(original.map(\.id)))
+            XCTAssertTrue(store.filteredStations.allSatisfy { $0.group == store.text("香港") && $0.city.isEmpty })
+            for station in store.filteredStations {
+                XCTAssertEqual(station.streams, original.first { $0.id == station.id }?.streams)
+            }
+        }
+    }
+
+    @MainActor
+    func testFollowingSystemClearsWindowAndHostingAppearanceOverrides() {
+        let window = NSWindow(contentRect: .zero, styleMask: [.borderless], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        defer { window.close() }
+        for forced in ["浅色", "深色", "浅色"] {
+            WindowTheme.apply(forced, to: window)
+            XCTAssertEqual(window.appearance?.name, forced == "浅色" ? .aqua : .darkAqua)
+            window.contentView?.appearance = NSAppearance(named: .aqua)
+            WindowTheme.apply("跟随系统", to: window)
+            XCTAssertNil(window.appearance)
+            XCTAssertNil(window.contentView?.appearance)
+            XCTAssertEqual(window.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]), NSApplication.shared.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]))
+        }
+    }
+
+    @MainActor
     func testSleepTimerCanBeConfiguredAndCancelled() {
         let player = PlaybackEngine()
 
@@ -176,5 +215,27 @@ final class CatalogTests: XCTestCase {
         window.deminiaturize(nil)
         XCTAssertEqual(XCTWaiter.wait(for: [restored], timeout: 3), .completed)
         XCTAssertFalse(window.isMiniaturized)
+    }
+
+    @MainActor
+    func testVolumeChangesAreImmediateButSavingIsDebounced() async throws {
+        let suiteName = "WaveletMacTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        defaults.set(Float(0.25), forKey: "wavelet.mac.volume.v1")
+        let player = PlaybackEngine(defaults: defaults)
+        var received: [Float] = []
+        let subscription = player.volumeChanges.sink { received.append($0) }
+        defer { subscription.cancel() }
+        player.volume = 0.4
+        player.volume = 0.6
+        XCTAssertEqual(received, [0.4, 0.6])
+        XCTAssertEqual(defaults.float(forKey: "wavelet.mac.volume.v1"), 0.25)
+        try await Task.sleep(for: .milliseconds(350))
+        XCTAssertEqual(defaults.float(forKey: "wavelet.mac.volume.v1"), 0.6)
+        player.volume = 1.2
+        XCTAssertEqual(player.volume, 1)
+        player.persistVolume()
+        XCTAssertEqual(defaults.float(forKey: "wavelet.mac.volume.v1"), 1)
     }
 }

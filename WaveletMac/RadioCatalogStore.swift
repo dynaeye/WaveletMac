@@ -109,7 +109,18 @@ final class RadioCatalogStore: ObservableObject {
 
     private func localizedStations(for preference: String) -> [Station] {
         let language = Self.resolvedLanguage(preference)
-        return sourceStations.map { translations?.localized($0, appLanguage: language) ?? $0 }
+        return sourceStations.map { source in
+            let station = translations?.localized(source, appLanguage: language) ?? source
+            guard station.region == "hk" else { return station }
+            // Match Macau's region grouping; broadcaster ownership is not a geographic group.
+            return Station(
+                id: station.id, name: station.name, region: station.region,
+                group: MacLocalization.text("香港", language: language), city: "",
+                category: station.category, language: station.language,
+                aliases: station.aliases, official: station.official,
+                source: station.source, streams: station.streams
+            )
+        }
     }
 
     var interfaceLanguage: String { Self.resolvedLanguage(languagePreference) }
@@ -165,6 +176,10 @@ enum MacLocalization {
     static let nativeLanguageNames = ["繁體中文": "繁體中文", "简体中文": "简体中文", "英文": "English", "日文": "日本語", "韩文": "한국어", "泰文": "ไทย", "西班牙语": "Español", "阿拉伯文": "العربية"]
     // Each row follows languages above: English, Japanese, Korean, Thai, Spanish, Arabic.
     static let translations: [String: [String]] = [
+        "播放来源": ["Source", "配信元", "재생 출처", "แหล่งที่มา", "Fuente", "المصدر"],
+        "查看目录来源": ["View directory source", "配信元を確認", "목록 출처 보기", "ดูแหล่งข้อมูลสถานี", "Ver fuente del directorio", "عرض مصدر الدليل"],
+        "电台网站": ["Station website", "放送局サイト", "방송국 웹사이트", "เว็บไซต์สถานี", "Sitio de la emisora", "موقع المحطة"],
+        "暂无来源信息": ["No source information", "配信元情報なし", "출처 정보 없음", "ไม่มีข้อมูลแหล่งที่มา", "Sin información de fuente", "لا توجد معلومات مصدر"],
         "最小化": ["Minimize", "最小化", "최소화", "ย่อหน้าต่าง", "Minimizar", "تصغير"],
         "中国大陆": ["Mainland China", "中国本土", "중국 본토", "จีนแผ่นดินใหญ่", "China continental", "الصين القارية"],
         "香港": ["Hong Kong", "香港", "홍콩", "ฮ่องกง", "Hong Kong", "هونغ كونغ"],
