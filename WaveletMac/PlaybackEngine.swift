@@ -120,6 +120,18 @@ final class PlaybackEngine: ObservableObject {
         updateNowPlaying()
     }
 
+    /// Releases all station-specific audio and timer state while keeping the engine reusable.
+    func clearStation() {
+        stopCurrentItem()
+        triedLines.removeAll()
+        sleepDeadline = nil
+        station = nil
+        line = 0
+        state = .ready
+        errorMessage = nil
+        updateNowPlaying()
+    }
+
     func updateStationMetadata(_ station: Station) {
         guard self.station?.id == station.id else { return }
         self.station = station

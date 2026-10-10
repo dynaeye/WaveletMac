@@ -56,7 +56,13 @@ struct DrawerWindowPresenter: NSViewRepresentable {
                 }
                 return
             }
-            let target = NSRect(x: parent.frame.minX, y: parent.frame.minY - 16 - height, width: parent.frame.width, height: height)
+            let screenFrame = parent.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? parent.frame
+            let target = DrawerPanelPlacement.frame(
+                parent: parent.frame,
+                visibleScreen: screenFrame,
+                preferredHeight: height
+            )
+            let panelHeight = target.height
             if panel == nil {
                 let newPanel = DrawerPanel(contentRect: target, styleMask: [.borderless], backing: .buffered, defer: false)
                 newPanel.isOpaque = false
@@ -65,14 +71,14 @@ struct DrawerWindowPresenter: NSViewRepresentable {
                 newPanel.hidesOnDeactivate = false
                 newPanel.title = "Wavelet 抽屉"
                 newPanel.isReleasedWhenClosed = false
-                let hosting = NSHostingView(rootView: AnyView(content.frame(width: target.width, height: height)))
+                let hosting = NSHostingView(rootView: AnyView(content.frame(width: target.width, height: panelHeight)))
                 newPanel.contentView = hosting
                 host = hosting
                 panel = newPanel
             }
             guard let panel else { return }
             WindowTheme.apply(themePreference, to: panel)
-            host?.rootView = AnyView(content.frame(width: target.width, height: height))
+            host?.rootView = AnyView(content.frame(width: target.width, height: panelHeight))
             if visible {
                 panel.setFrame(target, display: true)
                 return
@@ -89,6 +95,36 @@ struct DrawerWindowPresenter: NSViewRepresentable {
                 panel.animator().alphaValue = 1
             }
         }
+    }
+}
+
+enum DrawerPanelPlacement {
+    static func frame(parent: NSRect, visibleScreen: NSRect, preferredHeight: CGFloat) -> NSRect {
+        let margin: CGFloat = 8
+        let gap: CGFloat = 12
+        let width = min(parent.width, max(1, visibleScreen.width - margin * 2))
+        let x = min(max(parent.minX, visibleScreen.minX + margin), visibleScreen.maxX - margin - width)
+        let belowSpace = max(0, parent.minY - visibleScreen.minY - gap)
+        let aboveSpace = max(0, visibleScreen.maxY - parent.maxY - gap)
+        let minimumUsefulHeight = min(180, preferredHeight)
+
+        if belowSpace >= minimumUsefulHeight {
+            let height = min(preferredHeight, belowSpace)
+            return NSRect(x: x, y: parent.minY - gap - height, width: width, height: height)
+        }
+        if aboveSpace >= minimumUsefulHeight {
+            let height = min(preferredHeight, aboveSpace)
+            return NSRect(x: x, y: parent.maxY + gap, width: width, height: height)
+        }
+
+        // On short displays, use the side with more room and shrink the panel
+        // instead of letting AppKit relocate an off-screen child window.
+        if belowSpace >= aboveSpace {
+            let height = min(preferredHeight, max(1, belowSpace))
+            return NSRect(x: x, y: max(visibleScreen.minY, parent.minY - gap - height), width: width, height: height)
+        }
+        let height = min(preferredHeight, max(1, aboveSpace))
+        return NSRect(x: x, y: min(visibleScreen.maxY - height, parent.maxY + gap), width: width, height: height)
     }
 }
 

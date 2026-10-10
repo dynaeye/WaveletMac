@@ -24,7 +24,18 @@ struct ContentView: View {
     @ObservedObject var store: RadioCatalogStore
     @ObservedObject private var player: PlaybackEngine
     @State private var drawer: Drawer?
+    @State private var showsPersonalManager = false
+    @State private var showsPlaybackStatus = false
+    @State private var pendingDelete: Station?
+    @State private var deleteAlert: ContentAlert?
+    @State private var didPresentLoadError = false
     private let receiverHeight: CGFloat = 542
+
+    private struct ContentAlert: Identifiable {
+        let id = UUID()
+        let title: String
+        let message: String
+    }
 
     init(store: RadioCatalogStore) {
         self.store = store
@@ -39,14 +50,14 @@ struct ContentView: View {
     var body: some View {
         ZStack(alignment: .top) {
             receiver
-                .frame(height: receiverHeight, alignment: .top)
+                .frame(minHeight: receiverHeight, alignment: .top)
                 .transaction { transaction in
                     transaction.animation = nil
                 }
                 .zIndex(1)
 
         }
-        .frame(height: receiverHeight, alignment: .top)
+        .frame(minHeight: receiverHeight, alignment: .top)
         .background {
             DrawerWindowPresenter(
                 isPresented: drawer != nil,
@@ -67,6 +78,31 @@ struct ContentView: View {
         .alert(t("无法加载电台目录"), isPresented: loadErrorBinding) {
             Button(t("关闭"), role: .cancel) { }
         } message: { Text(t(store.loadError ?? "未知错误")) }
+        .alert(item: $deleteAlert) { alert in
+            Alert(title: Text(alert.title), message: Text(alert.message), dismissButton: .default(Text(t("确定"))))
+        }
+        .confirmationDialog(
+            t("删除此电台？"),
+            isPresented: Binding(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }),
+            titleVisibility: .visible,
+            presenting: pendingDelete
+        ) { station in
+            Button(t("删除"), role: .destructive) {
+                do { try store.deleteStation(station) }
+                catch { deleteAlert = ContentAlert(title: t("删除失败"), message: store.errorMessage(for: error)) }
+                pendingDelete = nil
+            }
+            Button(t("取消"), role: .cancel) { pendingDelete = nil }
+        } message: { station in
+            Text(station.name)
+        }
+        .sheet(isPresented: $showsPersonalManager) {
+            PersonalRadioManagerView(store: store)
+                .environment(\.locale, store.interfaceLocale)
+        }
+        .overlay {
+            if showsPlaybackStatus { playbackStatusOverlay.transition(.opacity).zIndex(5) }
+        }
     }
 
     private var receiver: some View {
@@ -177,7 +213,7 @@ struct ContentView: View {
                 .font(.custom("Space Mono", size: 9).weight(.bold)).tracking(1)
             Rectangle().fill(MacDesign.ink.opacity(0.25)).frame(height: 1)
             HStack(alignment: .lastTextBaseline, spacing: 10) {
-                Text(player.station.map { "\(t($0.regionName)) / \($0.language)" } ?? t("华语广播"))
+                Text(player.station.map { "\(t($0.regionName)) / \($0.language)" } ?? t("电台之声"))
                     .font(.custom("Noto Sans SC", size: 11))
                 Spacer(minLength: 8)
                 HStack(alignment: .lastTextBaseline, spacing: 4) {
@@ -185,9 +221,23 @@ struct ContentView: View {
                     Text("CH").font(.custom("Space Mono", size: 8).weight(.bold))
                 }
             }
-            Text(player.station?.name ?? t("选择电台，开始收听"))
-                .font(.custom("Noto Sans SC", size: 22).weight(.bold)).lineLimit(1).minimumScaleFactor(0.7)
-                .offset(y: -4)
+            Button { showsPlaybackStatus = true } label: {
+                VStack(alignment: .leading, spacing: player.station == nil ? 3 : 0) {
+                    Text(player.station?.name ?? t("导入您的电台"))
+                        .font(.custom("Noto Sans SC", size: 22).weight(.bold))
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    if player.station == nil {
+                        Text(t("电台之声 · 随时相伴"))
+                            .font(.custom("Noto Sans SC", size: 11))
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .offset(y: -4)
+            .accessibilityLabel(t("查看播放状态"))
             VStack(spacing: 7) {
                 HStack {
                     ForEach(["01", "03", "06", "09", "12"], id: \.self) { value in
@@ -206,7 +256,7 @@ struct ContentView: View {
                 }.frame(height: 17)
             }
             HStack {
-                Text(player.station?.category ?? t("华语广播")); Spacer()
+                Text(player.station?.category ?? t("电台之声")); Spacer()
                 TimelineView(.periodic(from: .now, by: 60)) { context in
                     Text(context.date, format: .dateTime.hour().minute()).font(.custom("Space Mono", size: 11))
                 }
@@ -262,7 +312,7 @@ struct ContentView: View {
             }
         }
         .padding(18)
-        .frame(height: drawerHeight, alignment: .top)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color(nsColor: .windowBackgroundColor), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
@@ -297,22 +347,20 @@ struct ContentView: View {
                     store.city = ""
                     store.category = ""
                 }
-            filterPicker("省市 / 分组", selection: $store.group, options: filterOptions(store.scopedStations.map(\.group)))
-                .onChange(of: store.group) { store.city = "" }
+            filterPicker("省市 / 分组", selection: $store.group, options: filterOptions(store.availableGroups))
+                .onChange(of: store.group) { store.city = ""; store.category = "" }
             filterPicker(
                 "城市",
                 selection: $store.city,
-                options: filterOptions(store.scopedStations.filter { store.group.isEmpty || $0.group == store.group }.map(\.city))
+                options: filterOptions(store.availableCities)
             )
-            filterPicker("节目类型", selection: $store.category, options: filterOptions(store.scopedStations.map(\.category)))
+                .onChange(of: store.city) { store.category = "" }
+            filterPicker("节目类型", selection: $store.category, options: filterOptions(store.availableCategories))
         }
     }
 
     private var regionOptions: [(value: String, label: String)] {
-        Region.all.compactMap { region in
-            let label = t(region.name)
-            return store.stations.contains { $0.region == region.id } ? (region.id, label) : nil
-        }
+        store.availableRegions.map { ($0.value, t($0.label)) }
     }
 
     private func filterOptions(_ values: [String]) -> [(value: String, label: String)] {
@@ -394,6 +442,13 @@ struct ContentView: View {
                         settingPicker("语言", icon: "character", value: store.languagePreference, options: ["跟随系统", "繁體中文", "简体中文", "英文", "日文", "韩文", "泰文", "西班牙语", "阿拉伯文"], onSelect: store.setLanguage)
                     }
                 }
+                settingsSection("个人电台") {
+                    HStack {
+                        Text(store.countText("个电台", store.stations.count))
+                        Spacer()
+                        Button(t("管理个人电台"), action: openPersonalManager)
+                    }
+                }
                 Divider()
                 HStack {
                     Button(t("退出 Wavelet")) {
@@ -450,7 +505,15 @@ struct ContentView: View {
     private func stationList(_ stations: [Station]) -> some View {
         Group {
             if stations.isEmpty {
-                ContentUnavailableView(t(drawer == .favorites ? "还没有收藏" : "没有匹配的电台"), systemImage: drawer == .favorites ? "heart" : "magnifyingglass")
+                ContentUnavailableView {
+                    Label(t(drawer == .favorites ? "还没有收藏" : (store.stations.isEmpty ? "尚未添加电台" : "没有匹配的电台")), systemImage: drawer == .favorites ? "heart" : "magnifyingglass")
+                } description: {
+                    if drawer == .directory && store.stations.isEmpty { Text(t("添加或导入你的第一个电台")) }
+                } actions: {
+                    if drawer == .directory && store.stations.isEmpty {
+                        Button(t("管理个人电台"), action: openPersonalManager).buttonStyle(.borderedProminent)
+                    }
+                }
             } else {
                 List(stations, selection: $store.selectedStationID) { station in
                     HStack(spacing: 10) {
@@ -461,11 +524,23 @@ struct ContentView: View {
                             Text(store.subtitle(station)).font(.custom("Noto Sans SC", size: 10)).foregroundStyle(MacDesign.muted)
                         }
                         Spacer()
+                        Button { store.play(station) } label: {
+                            Label(t("播放"), systemImage: "play.fill")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.borderless)
+                        .help(t("播放"))
+                        .accessibilityLabel(t("播放"))
                         Button { store.toggleFavorite(station) } label: {
                             Image(systemName: store.isFavorite(station) ? "heart.fill" : "heart").foregroundStyle(store.isFavorite(station) ? .red : MacDesign.muted)
                         }.buttonStyle(.plain)
                     }
-                    .contentShape(Rectangle()).onTapGesture { store.select(station) }.tag(station.id)
+                    .contentShape(Rectangle())
+                    .contextMenu { Button(t("删除电台"), role: .destructive) { pendingDelete = station } }
+                    .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                        Button(t("删除"), systemImage: "trash", role: .destructive) { pendingDelete = station }
+                    }
+                    .tag(station.id)
                 }.listStyle(.inset)
             }
         }
@@ -485,10 +560,68 @@ struct ContentView: View {
         switch drawer { case .favorites: t("我的收藏"); case .directory: t("电台列表"); case .settings: t("设置") }
     }
     private var drawerHeight: CGFloat {
-        let availableHeight = NSScreen.main?.visibleFrame.height ?? 900
+        let availableHeight = (TransparentWindowConfigurator.configuredWindow?.screen ?? NSScreen.main)?.visibleFrame.height ?? 900
         return min(350, max(220, availableHeight - 560))
     }
-    private var loadErrorBinding: Binding<Bool> { Binding(get: { store.loadError != nil }, set: { _ in }) }
+    private var loadErrorBinding: Binding<Bool> {
+        Binding(
+            get: { store.loadError != nil && !didPresentLoadError },
+            set: { if !$0 { didPresentLoadError = true } }
+        )
+    }
+
+    @MainActor
+    private func openPersonalManager() {
+        drawer = nil
+        Task { @MainActor in
+            await Task.yield()
+            showsPersonalManager = true
+        }
+    }
+
+    private var playbackStatusOverlay: some View {
+        GeometryReader { geometry in
+            ZStack {
+                Color.black.opacity(0.28).ignoresSafeArea()
+                    .onTapGesture { showsPlaybackStatus = false }
+                VStack(spacing: 14) {
+                    HStack {
+                        Text(t("播放状态")).font(.headline)
+                        Spacer()
+                        Button { showsPlaybackStatus = false } label: { Image(systemName: "xmark.circle.fill") }
+                            .buttonStyle(.plain).foregroundStyle(.secondary)
+                    }
+                    if let station = player.station {
+                        Text(station.name).font(.title2.weight(.bold)).multilineTextAlignment(.center)
+                        Text(store.subtitle(station)).font(.callout).foregroundStyle(.secondary)
+                        if let stream = station.streams.indices.contains(player.line) ? station.streams[player.line].url : nil {
+                            Text(stream.absoluteString).font(.caption).foregroundStyle(.secondary).lineLimit(2).textSelection(.enabled)
+                        }
+                        Text(t(player.state.rawValue)).font(.callout.weight(.medium))
+                        HStack {
+                            Button { player.toggle() } label: {
+                                Label(t(player.state.isActive ? "暂停播放" : "开始收听"), systemImage: player.state.isActive ? "pause.fill" : "play.fill")
+                            }.buttonStyle(.borderedProminent).disabled(player.station == nil)
+                            Button(t("关闭")) { player.clearStation() }.buttonStyle(.bordered)
+                        }
+                    } else {
+                        ContentUnavailableView {
+                            Label(t("尚未添加电台"), systemImage: "radio")
+                        } description: {
+                            Text(t("添加或导入你的第一个电台"))
+                        } actions: {
+                            Button(t("管理个人电台"), action: openPersonalManager).buttonStyle(.borderedProminent)
+                        }
+                    }
+                }
+                .padding(20)
+                .frame(width: min(geometry.size.width * 0.7, 460))
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18))
+                .shadow(color: .black.opacity(0.18), radius: 18, y: 8)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
 }
 
 

@@ -2,6 +2,7 @@
 DerivedData*/
 build/
 Final/
+/backups/
 *.xcuserstate
 xcuserdata/
 

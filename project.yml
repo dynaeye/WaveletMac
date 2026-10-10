@@ -21,10 +21,8 @@ targets:
     sources:
       - path: WaveletMac
       - path: Shared/Models.swift
-      - path: Shared/Resources
-        buildPhase: resources
-      - path: docs/电台目录翻译.json
-        buildPhase: resources
+      - path: Shared/PersonalCatalog.swift
+      - path: Shared/PersonalStationRepository.swift
       - path: Assets/WaveletAssets.xcassets
         buildPhase: resources
       - path: wavelet-logo-white3.png
@@ -36,17 +34,15 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.mythmedia.waveletmac
         PRODUCT_NAME: Wavelet
         PRODUCT_MODULE_NAME: WaveletMac
-        MARKETING_VERSION: "1.0"
-        CURRENT_PROJECT_VERSION: "1"
-        GENERATE_INFOPLIST_FILE: YES
+        MARKETING_VERSION: "1.1"
+        CURRENT_PROJECT_VERSION: "2"
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: WaveletMac/Info.plist
         INFOPLIST_KEY_CFBundleDisplayName: Wavelet
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.music
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: ""
       configs:
-        Debug:
-          EXCLUDED_SOURCE_FILE_NAMES: stations.json
         Release:
-          EXCLUDED_SOURCE_FILE_NAMES: stations-candidates.json
           DEVELOPMENT_TEAM: 2Z4FLDWWW9
           CODE_SIGN_STYLE: Manual
           CODE_SIGN_IDENTITY: Developer ID Application
@@ -55,15 +51,12 @@ targets:
       testTargets:
         - WaveletMacTests
 
+
   WaveletMacTests:
     type: bundle.unit-test
     platform: macOS
     sources:
       - path: WaveletMacTests
-      - path: Shared/Resources
-        buildPhase: resources
-      - path: docs/电台目录翻译.json
-        buildPhase: resources
     dependencies:
       - target: WaveletMac
     settings:
