@@ -19,7 +19,7 @@ private enum MacDesign {
 }
 
 struct ContentView: View {
-    enum Drawer: Equatable { case favorites, directory, settings }
+    enum Drawer: Equatable { case favorites, directory, settings, songRecognition }
 
     @ObservedObject var store: RadioCatalogStore
     @ObservedObject private var player: PlaybackEngine
@@ -29,6 +29,7 @@ struct ContentView: View {
     @State private var pendingDelete: Station?
     @State private var deleteAlert: ContentAlert?
     @State private var didPresentLoadError = false
+    @StateObject private var songRecognition = StreamSongRecognition()
     private let receiverHeight: CGFloat = 542
 
     private struct ContentAlert: Identifiable {
@@ -191,6 +192,7 @@ struct ContentView: View {
                 receiverDrawerButton("我的收藏", icon: "heart.fill", target: .favorites)
                 receiverDrawerButton("电台列表", icon: "list.bullet", target: .directory)
                 receiverDrawerButton("设置", icon: "gearshape.fill", target: .settings)
+                receiverDrawerButton("歌曲识别", icon: "waveform", target: .songRecognition)
                 Spacer(minLength: 12)
                 Image(nsImage: MacDesign.bottomLogo)
                     .resizable()
@@ -309,6 +311,7 @@ struct ContentView: View {
             case .directory: directoryView
             case .favorites: stationList(store.favoriteStations)
             case .settings: settingsView
+            case .songRecognition: songRecognitionView
             }
         }
         .padding(18)
@@ -412,6 +415,121 @@ struct ContentView: View {
             Button { self.drawer = nil } label: { Image(systemName: "xmark.circle.fill") }
                 .buttonStyle(.plain).foregroundStyle(MacDesign.muted).keyboardShortcut(.cancelAction)
         }
+    }
+
+    private var songRecognitionView: some View {
+        ScrollView {
+            VStack(spacing: 12) {
+                HStack(alignment: .center, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(t("识别 Wavelet 播放的歌曲，约5秒开始尝试，最长采集20秒；成功后立即停止，无需麦克风。"))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    Spacer(minLength: 8)
+                    Button(songRecognition.isRecognizing ? t("停止识别") : t("开始识别")) {
+                        if songRecognition.isRecognizing {
+                            songRecognition.stop()
+                        } else if player.currentStreamURL != nil, player.state == .playing {
+                            songRecognition.identify()
+                        } else {
+                            songRecognition.showNeedsPlayback()
+                        }
+                    }
+                    .disabled(!songRecognition.isRecognizing && (player.state != .playing || player.currentStreamURL == nil))
+                    .buttonStyle(.borderedProminent)
+                    .tint(MacDesign.amber)
+                }
+                if songRecognition.title != nil {
+                    Divider()
+                }
+                if !songRecognition.status.isEmpty {
+                    Text(t(songRecognition.status))
+                        .font(.caption)
+                        .foregroundStyle(songRecognition.title == nil ? .secondary : .primary)
+                        .textSelection(.enabled)
+                }
+                if let title = songRecognition.title {
+                    songResultRow(
+                        title: title, artist: songRecognition.artist ?? "",
+                        artworkURL: songRecognition.artworkURL,
+                        appleMusicURL: songRecognition.appleMusicURL,
+                        artworkSize: 64
+                    )
+                }
+                if songRecognition.isRecognizing && songRecognition.isCapturing {
+                    Text(String(format: t("正在录制 Wavelet 播放内容：%d/20 秒…"), songRecognition.recordedSeconds))
+                        .font(.caption.monospaced())
+                        .foregroundStyle(.tertiary)
+                }
+                Divider()
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(t("历史"))
+                        .font(.subheadline.weight(.semibold))
+                    if songRecognition.history.isEmpty {
+                        Text(t("暂无识别历史"))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(songRecognition.history) { song in
+                            songResultRow(
+                                title: song.title, artist: song.artist,
+                                artworkURL: song.artworkURL,
+                                appleMusicURL: song.appleMusicURL,
+                                artworkSize: 44
+                            )
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
+
+    private func songResultRow(
+        title: String, artist: String, artworkURL: URL?,
+        appleMusicURL: URL?, artworkSize: CGFloat
+    ) -> some View {
+        HStack(alignment: .center, spacing: 12) {
+            AsyncImage(url: artworkURL) { phase in
+                if let image = phase.image {
+                    image.resizable().scaledToFill()
+                } else {
+                    ZStack {
+                        Color.primary.opacity(0.06)
+                        Image(systemName: "music.note")
+                            .font(.title2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .frame(width: artworkSize, height: artworkSize)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .accessibilityLabel(t("歌曲封面"))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(artworkSize == 64 ? .headline : .subheadline.weight(.medium))
+                    .lineLimit(2)
+                Text(artist)
+                    .font(artworkSize == 64 ? .subheadline : .caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .textSelection(.enabled)
+
+            if let url = appleMusicURL {
+                Link(destination: url) {
+                    Label("Apple Music", systemImage: "arrow.up.right.square")
+                }
+                .font(.caption)
+                .fixedSize()
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var settingsView: some View {
@@ -557,11 +675,12 @@ struct ContentView: View {
         switch player.state { case .ready: "READY"; case .connecting: "CONNECTING"; case .buffering: "BUFFERING"; case .playing: "LIVE"; case .paused: "PAUSED"; case .failed: "FAILED" }
     }
     private func drawerTitle(_ drawer: Drawer) -> String {
-        switch drawer { case .favorites: t("我的收藏"); case .directory: t("电台列表"); case .settings: t("设置") }
+        switch drawer { case .favorites: t("我的收藏"); case .directory: t("电台列表"); case .settings: t("设置"); case .songRecognition: t("歌曲识别") }
     }
     private var drawerHeight: CGFloat {
         let availableHeight = (TransparentWindowConfigurator.configuredWindow?.screen ?? NSScreen.main)?.visibleFrame.height ?? 900
-        return min(350, max(220, availableHeight - 560))
+        let preferredHeight: CGFloat = 350
+        return min(preferredHeight, max(220, availableHeight - 560))
     }
     private var loadErrorBinding: Binding<Bool> {
         Binding(

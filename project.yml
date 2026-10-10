@@ -34,8 +34,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.mythmedia.waveletmac
         PRODUCT_NAME: Wavelet
         PRODUCT_MODULE_NAME: WaveletMac
-        MARKETING_VERSION: "1.1"
-        CURRENT_PROJECT_VERSION: "2"
+        MARKETING_VERSION: "1.2"
+        CURRENT_PROJECT_VERSION: "3"
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: WaveletMac/Info.plist
         INFOPLIST_KEY_CFBundleDisplayName: Wavelet

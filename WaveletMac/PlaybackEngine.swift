@@ -55,6 +55,11 @@ final class PlaybackEngine: ObservableObject {
     private var workspaceObservers: [NSObjectProtocol] = []
     private var audioOutputMonitor: AudioOutputMonitor?
 
+    var currentStreamURL: URL? {
+        guard let station, station.streams.indices.contains(line) else { return nil }
+        return station.streams[line].url
+    }
+
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         volume = min(1, max(0, defaults.object(forKey: volumeKey) as? Float ?? 0.65))

@@ -14,6 +14,7 @@
 		5A2340EFA7B6DA5EACA99CE9 /* Inter.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DF68822DF76D16B822E7E50C /* Inter.ttf */; };
 		5BF55B247BF1FA92CD118DBC /* TransparentWindowConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA6AFE9B595BD62D91DEF4D /* TransparentWindowConfigurator.swift */; };
 		625AE91E2A887AF5BF88E0A1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C52B96363B433168BFAFF5C /* ContentView.swift */; };
+		6F6230A49E9C6EBC76504795 /* StreamSongRecognition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20D1B277D076DA9B5A2BFEDC /* StreamSongRecognition.swift */; };
 		6FC8942B5AF087C6C2FCA3D4 /* PlaybackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A871290EC8D0469135FCC582 /* PlaybackEngine.swift */; };
 		722D2B02AE5224B4C903010B /* PersonalStationRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508599B4558E2DC438376D8F /* PersonalStationRepository.swift */; };
 		759CCF862D0C222C86B4B624 /* RadioCatalogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CB563B5E8BBB15FA118F3BC /* RadioCatalogStore.swift */; };
@@ -47,6 +48,7 @@
 		13A982A61FDF19C25B8D0946 /* WaveletAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = WaveletAssets.xcassets; sourceTree = "<group>"; };
 		1408CA773B7625451E88DABA /* NotoSansSC-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "NotoSansSC-OFL.txt"; sourceTree = "<group>"; };
 		1C52B96363B433168BFAFF5C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		20D1B277D076DA9B5A2BFEDC /* StreamSongRecognition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamSongRecognition.swift; sourceTree = "<group>"; };
 		2FA6AFE9B595BD62D91DEF4D /* TransparentWindowConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransparentWindowConfigurator.swift; sourceTree = "<group>"; };
 		35C940A7F55E1266FBE69C4E /* wavelet-logo-white3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wavelet-logo-white3.png"; sourceTree = "<group>"; };
 		40F980520BBB82E1063F5AC9 /* CatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogTests.swift; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 				DBA84627744ADDC9A164851C /* PersonalRadioManagerView.swift */,
 				A871290EC8D0469135FCC582 /* PlaybackEngine.swift */,
 				7CB563B5E8BBB15FA118F3BC /* RadioCatalogStore.swift */,
+				20D1B277D076DA9B5A2BFEDC /* StreamSongRecognition.swift */,
 				2FA6AFE9B595BD62D91DEF4D /* TransparentWindowConfigurator.swift */,
 				F812A2EBB4704F2F87878FD0 /* WaveletMacApp.swift */,
 			);
@@ -261,6 +264,7 @@
 				722D2B02AE5224B4C903010B /* PersonalStationRepository.swift in Sources */,
 				6FC8942B5AF087C6C2FCA3D4 /* PlaybackEngine.swift in Sources */,
 				759CCF862D0C222C86B4B624 /* RadioCatalogStore.swift in Sources */,
+				6F6230A49E9C6EBC76504795 /* StreamSongRecognition.swift in Sources */,
 				5BF55B247BF1FA92CD118DBC /* TransparentWindowConfigurator.swift in Sources */,
 				F05809620A42DDA1D52083C6 /* WaveletMacApp.swift in Sources */,
 			);
@@ -376,7 +380,7 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 2Z4FLDWWW9;
 				ENABLE_TESTABILITY = NO;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -387,7 +391,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mythmedia.waveletmac;
 				PRODUCT_MODULE_NAME = WaveletMac;
 				PRODUCT_NAME = Wavelet;
@@ -477,7 +481,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = WaveletMac/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Wavelet;
@@ -486,7 +490,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mythmedia.waveletmac;
 				PRODUCT_MODULE_NAME = WaveletMac;
 				PRODUCT_NAME = Wavelet;

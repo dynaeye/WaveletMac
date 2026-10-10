@@ -27,6 +27,10 @@
 		<key>NSAllowsArbitraryLoadsForMedia</key>
 		<true/>
 	</dict>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>Wavelet captures only its own system-output audio for up to 20 seconds to identify the song and stops as soon as it finds a match. It does not use the microphone, and the temporary audio remains in memory.</string>
+	<key>NSScreenCaptureUsageDescription</key>
+	<string>Wavelet uses ScreenCaptureKit to capture only its own system-output audio for song identification. No screen image or microphone audio is captured.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

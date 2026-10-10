@@ -487,4 +487,64 @@ final class CatalogTests: XCTestCase {
         player.persistVolume()
         XCTAssertEqual(defaults.float(forKey: "wavelet.mac.volume.v1"), 1)
     }
+
+    @MainActor
+    func testRecognitionHistoryKeepsFiveLatestDistinctSongsAndRestoresMetadata() throws {
+        let (defaults, suite) = try makeDefaults()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let recognition = StreamSongRecognition(defaults: defaults)
+        for index in 1...6 {
+            recognition.remember(RecognizedSong(
+                id: "track-\(index)", title: "Song \(index)", artist: "Artist \(index)",
+                artworkURL: URL(string: "https://example.com/cover/\(index).jpg"),
+                appleMusicURL: URL(string: "https://music.apple.com/song/\(index)")
+            ))
+        }
+        XCTAssertEqual(recognition.history.map(\.id), ["track-6", "track-5", "track-4", "track-3", "track-2"])
+        let repeated = RecognizedSong(
+            id: "track-3", title: "Updated Song 3", artist: "Artist 3",
+            artworkURL: URL(string: "https://example.com/updated-cover.jpg"),
+            appleMusicURL: URL(string: "https://music.apple.com/song/3")
+        )
+        recognition.remember(repeated)
+        XCTAssertEqual(recognition.history.map(\.id), ["track-3", "track-6", "track-5", "track-4", "track-2"])
+        XCTAssertEqual(recognition.history.first, repeated)
+        XCTAssertEqual(StreamSongRecognition(defaults: defaults).history, recognition.history)
+    }
+
+    @MainActor
+    func testInvalidRecognitionHistoryStartsEmptyAndCanSaveAgain() throws {
+        let (defaults, suite) = try makeDefaults()
+        defer { defaults.removePersistentDomain(forName: suite) }
+        defaults.set(Data("invalid JSON".utf8), forKey: "wavelet.mac.songRecognitionHistory.v1")
+        let recognition = StreamSongRecognition(defaults: defaults)
+        XCTAssertTrue(recognition.history.isEmpty)
+        let song = RecognizedSong(id: "track", title: "Song", artist: "Artist", artworkURL: nil, appleMusicURL: nil)
+        recognition.remember(song)
+        XCTAssertEqual(StreamSongRecognition(defaults: defaults).history, [song])
+    }
+
+    func testProgressiveRecognitionQueriesAtFiveSecondIntervalsAndStopsAtTwenty() {
+        var schedule = RecognitionQuerySchedule(minimumDuration: 3)
+        var queries: [Int] = []
+        var finalQueries: [Int] = []
+        for second in 0...25 {
+            if let isFinal = schedule.checkpoint(at: Double(second)) {
+                queries.append(second)
+                if isFinal { finalQueries.append(second) }
+            }
+        }
+        XCTAssertEqual(queries, [5, 10, 15, 20])
+        XCTAssertEqual(finalQueries, [20])
+    }
+
+    func testProgressiveRecognitionRespectsCatalogMinimumAndHandlesSkippedSamples() {
+        var schedule = RecognitionQuerySchedule(minimumDuration: 7)
+        XCTAssertNil(schedule.checkpoint(at: 5))
+        XCTAssertEqual(schedule.checkpoint(at: 7), false)
+        XCTAssertNil(schedule.checkpoint(at: 7.2))
+        XCTAssertEqual(schedule.checkpoint(at: 13), false)
+        XCTAssertEqual(schedule.checkpoint(at: 20.1), true)
+        XCTAssertNil(schedule.checkpoint(at: 25))
+    }
 }
