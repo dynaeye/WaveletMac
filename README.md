@@ -20,11 +20,11 @@ Wavelet is a personal internet radio player for macOS. Start with an empty list,
 
 ### Version and System Requirements
 
-Latest released version: 1.0 (legacy build). Supports macOS 15 or later, with a universal build for both Apple silicon and Intel Macs.
+Latest released version: 1.3. Supports macOS 15 or later, with a universal build for both Apple silicon and Intel Macs.
 
 ### Download and Installation
 
-The previously released Wavelet 1.0 is signed with a Developer ID and notarized by Apple. Its DMG is available from [GitHub Releases](https://github.com/dynaeye/WaveletMac/releases/download/v1.0/Wavelet-1.0.dmg); it is not the personal-radio build described above.
+Wavelet 1.3 is signed with a Developer ID and notarized by Apple. Download it from [GitHub Releases](https://github.com/dynaeye/WaveletMac/releases/download/v1.3/Wavelet-1.3.dmg); a SHA-256 checksum file is published alongside the DMG. The legacy Wavelet 1.0 build remains available.
 
 ### Feedback
 
@@ -51,11 +51,11 @@ Wavelet 是 macOS 個人網路收音機。初次使用時電台列表為空，�
 
 ### 版本與系統需求
 
-最新已發行版本：1.0（舊版）。支援 macOS 15 或更新版本，並提供 Apple 晶片與 Intel Mac 通用版本。
+最新已發行版本：1.3。支援 macOS 15 或更新版本，並提供 Apple 晶片與 Intel Mac 通用版本。
 
 ### 下載與安裝
 
-舊版 Wavelet 1.0 已完成 Developer ID 簽名和 Apple 公證。可從 [GitHub Releases 下載](https://github.com/dynaeye/WaveletMac/releases/download/v1.0/Wavelet-1.0.dmg)；此版本不包含上文所述的個人電台功能。
+Wavelet 1.3 已完成 Developer ID 簽名和 Apple 公證。可從 [GitHub Releases 下載](https://github.com/dynaeye/WaveletMac/releases/download/v1.3/Wavelet-1.3.dmg)，同頁附 SHA-256 校驗檔；舊版 Wavelet 1.0 仍可下載。
 
 ### 問題回饋
 
@@ -82,11 +82,11 @@ Wavelet 是 macOS 个人网络收音机。首次使用时电台列表为空，�
 
 ### 版本与系统要求
 
-最新已发行版本：1.0（旧版）。支持 macOS 15 或更新版本，并提供 Apple 芯片与 Intel Mac 通用版本。
+最新已发行版本：1.3。支持 macOS 15 或更新版本，并提供 Apple 芯片与 Intel Mac 通用版本。
 
 ### 下载与安装
 
-旧版 Wavelet 1.0 已完成 Developer ID 签名和 Apple 公证。可从 [GitHub Releases 下载](https://github.com/dynaeye/WaveletMac/releases/download/v1.0/Wavelet-1.0.dmg)；此版本不包含上文所述的个人电台功能。
+Wavelet 1.3 已完成 Developer ID 签名和 Apple 公证。可从 [GitHub Releases 下载](https://github.com/dynaeye/WaveletMac/releases/download/v1.3/Wavelet-1.3.dmg)，同页附 SHA-256 校验文件；旧版 Wavelet 1.0 仍可下载。
 
 ### 问题反馈
 
