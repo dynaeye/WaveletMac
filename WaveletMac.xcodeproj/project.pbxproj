@@ -13,6 +13,7 @@
 		52EE92219BABE261EADB5FB2 /* PersonalCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B39F565B9EDD01F366261C /* PersonalCatalog.swift */; };
 		5A2340EFA7B6DA5EACA99CE9 /* Inter.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DF68822DF76D16B822E7E50C /* Inter.ttf */; };
 		5BF55B247BF1FA92CD118DBC /* TransparentWindowConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA6AFE9B595BD62D91DEF4D /* TransparentWindowConfigurator.swift */; };
+		5C9F8D19219E0169E2EAB8EB /* PlaybackProgressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA21F7E87EDE68C68AD52578 /* PlaybackProgressTests.swift */; };
 		625AE91E2A887AF5BF88E0A1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C52B96363B433168BFAFF5C /* ContentView.swift */; };
 		6F6230A49E9C6EBC76504795 /* StreamSongRecognition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20D1B277D076DA9B5A2BFEDC /* StreamSongRecognition.swift */; };
 		6FC8942B5AF087C6C2FCA3D4 /* PlaybackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A871290EC8D0469135FCC582 /* PlaybackEngine.swift */; };
@@ -28,6 +29,7 @@
 		B0935B6C214DC802490E983F /* CatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40F980520BBB82E1063F5AC9 /* CatalogTests.swift */; };
 		B1B88EEA41A4C44402974498 /* NotoSansSC.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0D3CB82C441D5FA8EA36706C /* NotoSansSC.ttf */; };
 		B65F8D1EA824A569CA7E7371 /* SpaceMono-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 585EC4D4233C0A457EEC22C7 /* SpaceMono-OFL.txt */; };
+		BA3E6A0202D5CC27D7E3ECC5 /* PlaybackProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4016DFB326BC1F211B40AB5 /* PlaybackProgress.swift */; };
 		C130C8872BD39B8935F35596 /* UPnPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5CA554A9F2333070B73A062 /* UPnPClient.swift */; };
 		C91B569A9AD269BCAD95A0E4 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BECEDB52E884949B826C408 /* MenuBarView.swift */; };
 		CC5162B60AE2149D49078417 /* LocalMediaLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDAB991CE1E02A4253A8262B /* LocalMediaLibraryView.swift */; };
@@ -73,6 +75,7 @@
 		AB6EA4B4350819633DCB0F99 /* WaveletMacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WaveletMacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2B39F565B9EDD01F366261C /* PersonalCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalCatalog.swift; sourceTree = "<group>"; };
 		BDAB991CE1E02A4253A8262B /* LocalMediaLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalMediaLibraryView.swift; sourceTree = "<group>"; };
+		D4016DFB326BC1F211B40AB5 /* PlaybackProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackProgress.swift; sourceTree = "<group>"; };
 		D90665AE69CAE8A87D069CB2 /* FontRegistrar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontRegistrar.swift; sourceTree = "<group>"; };
 		DBA84627744ADDC9A164851C /* PersonalRadioManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalRadioManagerView.swift; sourceTree = "<group>"; };
 		DC376507C5C193EF96FE2ADA /* Inter-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Inter-OFL.txt"; sourceTree = "<group>"; };
@@ -85,6 +88,7 @@
 		F68958F5572F1DE82281A784 /* MediaLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaLocalization.swift; sourceTree = "<group>"; };
 		F812A2EBB4704F2F87878FD0 /* WaveletMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveletMacApp.swift; sourceTree = "<group>"; };
 		F86BBDC3B9E16435D1DCD409 /* WaveletMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WaveletMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA21F7E87EDE68C68AD52578 /* PlaybackProgressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackProgressTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -108,6 +112,7 @@
 				5BECEDB52E884949B826C408 /* MenuBarView.swift */,
 				DBA84627744ADDC9A164851C /* PersonalRadioManagerView.swift */,
 				A871290EC8D0469135FCC582 /* PlaybackEngine.swift */,
+				D4016DFB326BC1F211B40AB5 /* PlaybackProgress.swift */,
 				7CB563B5E8BBB15FA118F3BC /* RadioCatalogStore.swift */,
 				20D1B277D076DA9B5A2BFEDC /* StreamSongRecognition.swift */,
 				2FA6AFE9B595BD62D91DEF4D /* TransparentWindowConfigurator.swift */,
@@ -144,6 +149,7 @@
 			children = (
 				40F980520BBB82E1063F5AC9 /* CatalogTests.swift */,
 				48A9F4F4F305CE893E22BFF0 /* MediaTests.swift */,
+				FA21F7E87EDE68C68AD52578 /* PlaybackProgressTests.swift */,
 			);
 			path = WaveletMacTests;
 			sourceTree = "<group>";
@@ -296,6 +302,7 @@
 				10C71E60A7FB153E7CDA30F4 /* PersonalRadioManagerView.swift in Sources */,
 				722D2B02AE5224B4C903010B /* PersonalStationRepository.swift in Sources */,
 				6FC8942B5AF087C6C2FCA3D4 /* PlaybackEngine.swift in Sources */,
+				BA3E6A0202D5CC27D7E3ECC5 /* PlaybackProgress.swift in Sources */,
 				759CCF862D0C222C86B4B624 /* RadioCatalogStore.swift in Sources */,
 				A9F88D81E0A85DF5667943C1 /* SMBClient.swift in Sources */,
 				6F6230A49E9C6EBC76504795 /* StreamSongRecognition.swift in Sources */,
@@ -311,6 +318,7 @@
 			files = (
 				B0935B6C214DC802490E983F /* CatalogTests.swift in Sources */,
 				73D6E44991900F137D44EF03 /* MediaTests.swift in Sources */,
+				5C9F8D19219E0169E2EAB8EB /* PlaybackProgressTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -416,7 +424,7 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = 2Z4FLDWWW9;
 				ENABLE_TESTABILITY = NO;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -517,7 +525,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = WaveletMac/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Wavelet;

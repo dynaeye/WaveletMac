@@ -26,11 +26,12 @@ struct ContentView: View {
     @Environment(\.openWindow) private var openWindow
     @State private var drawer: Drawer?
     @State private var showsPersonalManager = false
-    @State private var showsPlaybackStatus = false
     @State private var pendingDelete: Station?
     @State private var deleteAlert: ContentAlert?
     @State private var didPresentLoadError = false
     @StateObject private var songRecognition = StreamSongRecognition()
+    @State private var isScrubbingProgress = false
+    @State private var scrubProgressRatio: Double = 0
     private let receiverHeight: CGFloat = 542
 
     private struct ContentAlert: Identifiable {
@@ -101,9 +102,6 @@ struct ContentView: View {
         .sheet(isPresented: $showsPersonalManager) {
             PersonalRadioManagerView(store: store)
                 .environment(\.locale, store.interfaceLocale)
-        }
-        .overlay {
-            if showsPlaybackStatus { playbackStatusOverlay.transition(.opacity).zIndex(5) }
         }
     }
 
@@ -246,40 +244,23 @@ struct ContentView: View {
                     Text("CH").font(.custom("Space Mono", size: 8).weight(.bold))
                 }
             }
-            Button { showsPlaybackStatus = true } label: {
-                VStack(alignment: .leading, spacing: player.displayTitle == nil ? 3 : 0) {
-                    Text(player.displayTitle ?? t("导入您的电台"))
-                        .font(.custom("Noto Sans SC", size: 22).weight(.bold))
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    if player.displayTitle == nil {
-                        Text(t("电台之声 · 随时相伴"))
-                            .font(.custom("Noto Sans SC", size: 11))
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+            VStack(alignment: .leading, spacing: player.displayTitle == nil ? 3 : 0) {
+                Text(player.displayTitle ?? t("导入您的电台"))
+                    .font(.custom("Noto Sans SC", size: 22).weight(.bold))
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                if player.displayTitle == nil {
+                    Text(t("电台之声 · 随时相伴"))
+                        .font(.custom("Noto Sans SC", size: 11))
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
             .offset(y: -4)
-            .accessibilityLabel(t("查看播放状态"))
-            VStack(spacing: 7) {
-                HStack {
-                    ForEach(["01", "03", "06", "09", "12"], id: \.self) { value in
-                        Text(value); if value != "12" { Spacer() }
-                    }
-                }.font(.custom("Space Mono", size: 8))
-                GeometryReader { proxy in
-                    Canvas { context, size in
-                        for tick in 0...36 {
-                            let x = CGFloat(tick) / 36 * size.width
-                            var path = Path(); path.move(to: CGPoint(x: x, y: tick % 3 == 0 ? 0 : 5)); path.addLine(to: CGPoint(x: x, y: size.height))
-                            context.stroke(path, with: .color(MacDesign.ink.opacity(0.35)), lineWidth: 1)
-                        }
-                    }
-                    Capsule().fill(MacDesign.forest).frame(width: 2, height: 23).offset(x: proxy.size.width * needlePosition, y: -4)
-                }.frame(height: 17)
+            if player.localTrack != nil {
+                localProgressDial
+            } else {
+                tuningScale
             }
             HStack {
                 Text(tuningCategory).lineLimit(1); Spacer()
@@ -290,6 +271,82 @@ struct ContentView: View {
         }
         .foregroundStyle(Color(hex: 0x493B1F)).padding(15)
         .background(LinearGradient(colors: [Color(hex: 0xF3D293), MacDesign.amber], startPoint: .top, endPoint: .bottom), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    /// Analog frequency scale, used while an internet station is tuned in.
+    private var tuningScale: some View {
+        VStack(spacing: 7) {
+            HStack {
+                ForEach(["01", "03", "06", "09", "12"], id: \.self) { value in
+                    Text(value); if value != "12" { Spacer() }
+                }
+            }.font(.custom("Space Mono", size: 8))
+            GeometryReader { proxy in
+                Canvas { context, size in
+                    for tick in 0...36 {
+                        let x = CGFloat(tick) / 36 * size.width
+                        var path = Path(); path.move(to: CGPoint(x: x, y: tick % 3 == 0 ? 0 : 5)); path.addLine(to: CGPoint(x: x, y: size.height))
+                        context.stroke(path, with: .color(MacDesign.ink.opacity(0.35)), lineWidth: 1)
+                    }
+                }
+                Capsule().fill(MacDesign.forest).frame(width: 2, height: 23).offset(x: proxy.size.width * needlePosition, y: -4)
+            }.frame(height: 17)
+        }
+    }
+
+    /// Segmented, draggable playback position, shown in place of the tuning scale for local or UPnP files.
+    private var localProgressDial: some View {
+        let progress = LocalPlaybackProgress(position: player.localPosition, duration: player.localDuration)
+        let ratio = isScrubbingProgress ? scrubProgressRatio : progress.ratio
+        let segmentCount = 36
+        return VStack(spacing: 7) {
+            HStack {
+                Text(progress.elapsedLabel)
+                Spacer()
+                Text(progress.durationLabel)
+            }.font(.custom("Space Mono", size: 8))
+            GeometryReader { proxy in
+                let width = max(proxy.size.width, 1)
+                HStack(spacing: 2) {
+                    ForEach(Array(0..<segmentCount), id: \.self) { index in
+                        RoundedRectangle(cornerRadius: 1, style: .continuous)
+                            .fill(MacDesign.ink.opacity(LocalPlaybackProgress.segmentLevel(
+                                index: index, count: segmentCount, ratio: ratio
+                            )))
+                    }
+                }
+                .frame(maxHeight: .infinity, alignment: .center)
+                .contentShape(Rectangle())
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            guard progress.isSeekable else { return }
+                            isScrubbingProgress = true
+                            scrubProgressRatio = min(max(Double(value.location.x / width), 0), 1)
+                        }
+                        .onEnded { value in
+                            guard progress.isSeekable else { return }
+                            let target = min(max(Double(value.location.x / width), 0), 1)
+                            scrubProgressRatio = target
+                            player.seekLocal(to: progress.position(atRatio: target))
+                            isScrubbingProgress = false
+                        }
+                )
+                .help(t("播放进度"))
+            }.frame(height: 17)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(t("播放进度"))
+        .accessibilityValue("\(progress.elapsedLabel) / \(progress.durationLabel)")
+        .accessibilityAdjustableAction { direction in
+            guard progress.isSeekable else { return }
+            let delta: TimeInterval = direction == .increment ? 10 : -10
+            player.seekLocal(to: player.localPosition + delta)
+        }
+        .onChange(of: player.localTrack?.id) {
+            isScrubbingProgress = false
+            scrubProgressRatio = 0
+        }
     }
 
     private var streamSelector: some View {
@@ -757,53 +814,6 @@ struct ContentView: View {
         }
     }
 
-    private var playbackStatusOverlay: some View {
-        GeometryReader { geometry in
-            ZStack {
-                Color.black.opacity(0.28).ignoresSafeArea()
-                    .onTapGesture { showsPlaybackStatus = false }
-                VStack(spacing: 14) {
-                    Text(t("播放状态"))
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    if let track = player.localTrack {
-                        Text(track.title).font(.title2.weight(.bold)).multilineTextAlignment(.center)
-                        Text(track.subtitle).font(.callout).foregroundStyle(.secondary)
-                        Text("\(track.format) · \(track.sourceName)")
-                            .font(.caption).foregroundStyle(.secondary).lineLimit(2)
-                        Text(store.statusText()).font(.callout.weight(.medium))
-                    } else if let station = player.station {
-                        Text(station.name).font(.title2.weight(.bold)).multilineTextAlignment(.center)
-                        Text(store.subtitle(station)).font(.callout).foregroundStyle(.secondary)
-                        if let stream = station.streams.indices.contains(player.line) ? station.streams[player.line].url : nil {
-                            Text(stream.absoluteString).font(.caption).foregroundStyle(.secondary).lineLimit(2).textSelection(.enabled)
-                        }
-                        Text(t(player.state.rawValue)).font(.callout.weight(.medium))
-                    } else {
-                        ContentUnavailableView {
-                            Label(t("尚未添加电台"), systemImage: "radio")
-                        } description: {
-                            Text(t("添加或导入你的第一个电台"))
-                        } actions: {
-                            HStack {
-                                Button(t("管理个人电台"), action: openPersonalManager).buttonStyle(.borderedProminent)
-                                Button(t("浏览本地音频")) {
-                                    showsPlaybackStatus = false
-                                    openWindow(id: "localMedia")
-                                    NSApplication.shared.activate(ignoringOtherApps: true)
-                                }.buttonStyle(.bordered)
-                            }
-                        }
-                    }
-                }
-                .padding(20)
-                .frame(width: min(geometry.size.width * 0.7, 460))
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18))
-                .shadow(color: .black.opacity(0.18), radius: 18, y: 8)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-    }
 }
 
 

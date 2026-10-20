@@ -354,6 +354,7 @@ enum MacLocalization {
         "分钟后停止": ["Stop in %d minutes", "%d 分後に停止", "%d분 후 중지", "หยุดใน %d นาที", "Detener en %d minutos", "إيقاف بعد %d دقيقة"],
         "音量": ["Volume", "音量", "음량", "ระดับเสียง", "Volumen", "مستوى الصوت"],
         "播放": ["Playback", "再生", "재생", "การเล่น", "Reproducción", "التشغيل"],
+        "播放进度": ["Playback position", "再生位置", "재생 위치", "ตำแหน่งการเล่น", "Posición de reproducción", "موضع التشغيل"],
         "歌曲识别": ["Song recognition", "曲名認識", "곡 인식", "ระบุเพลง", "Reconocer canción", "التعرّف على الأغنية"],
         "歌曲封面": ["Song artwork", "曲のアートワーク", "곡 커버", "ภาพปกเพลง", "Portada de la canción", "غلاف الأغنية"],
         "历史": ["History", "履歴", "기록", "ประวัติ", "Historial", "السجل"],
