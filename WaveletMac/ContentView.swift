@@ -250,7 +250,8 @@ struct ContentView: View {
                 VStack(alignment: .leading, spacing: player.displayTitle == nil ? 3 : 0) {
                     Text(player.displayTitle ?? t("导入您的电台"))
                         .font(.custom("Noto Sans SC", size: 22).weight(.bold))
-                        .fixedSize(horizontal: false, vertical: true)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     if player.displayTitle == nil {
                         Text(t("电台之声 · 随时相伴"))
