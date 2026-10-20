@@ -14,6 +14,7 @@ Wavelet is a personal internet radio player for macOS. Start with an empty list,
 - Play, pause, switch between streams, adjust volume, save favorites, and set a sleep timer.
 - Station data is stored locally on your Mac. Network JSON files are downloaded only when you initiate an HTTPS import; audio streams connect to the stations you add.
 - View the current station and control playback from the macOS menu bar.
+- Browse and play audio from SMB shares, UPnP/DLNA servers, and folders on this Mac. Local playback supports folders, queues, seeking, and the same controls as radio.
 - Choose Light, Dark, or System appearance; the interface is available in Simplified Chinese, Traditional Chinese, English, Japanese, Korean, Thai, Spanish, and Arabic.
 - By default, playback does not start automatically at launch; you can change this in Settings.
 
@@ -44,6 +45,7 @@ Wavelet 是 macOS 個人網路收音機。初次使用時電台列表為空，�
 - 支援播放、暫停、切換線路、音量、收藏和睡眠定時。
 - 電台資料儲存在本機；網路 JSON 僅在你主動匯入時透過 HTTPS 下載，音訊則連線至你新增的電台。
 - 從 macOS 選單列查看目前電台並控制播放。
+- 瀏覽並播放 SMB 共享、UPnP/DLNA 伺服器及本機資料夾中的音訊；支援資料夾、佇列、進度拖曳和與電台相同的播放控制。
 - 選擇淺色、深色或跟隨系統外觀；介面提供簡體中文、繁體中文、English、日本語、한국어、ไทย、Español 和 العربية。
 - 預設不會在啟動時自動播放，可在設定中更改。
 
@@ -74,6 +76,7 @@ Wavelet 是 macOS 个人网络收音机。首次使用时电台列表为空，�
 - 支持播放、暂停、切换线路、音量、收藏和睡眠定时。
 - 电台数据保存在本机；网络 JSON 仅在你主动导入时通过 HTTPS 下载，音频连接到你添加的电台。
 - 从 macOS 菜单栏查看当前电台并控制播放。
+- 浏览并播放 SMB 共享、UPnP/DLNA 服务器及本机文件夹中的音频；支持文件夹、队列、进度拖曳和与电台相同的播放控制。
 - 选择浅色、深色或跟随系统外观；界面提供简体中文、繁體中文、English、日本語、한국어、ไทย、Español 和 العربية。
 - 默认不会在启动时自动播放，可在设置中更改。
 
@@ -104,6 +107,7 @@ Wavelet は macOS 向けの個人用インターネットラジオです。初�
 - 再生、一時停止、配信切り替え、音量、お気に入り、スリープタイマーに対応しています。
 - 電台データは Mac 内に保存されます。ネットワーク JSON は利用者が開始した場合のみ HTTPS で取得し、音声は追加した放送局に接続します。
 - macOS のメニューバーから現在の放送局を確認し、再生を操作できます。
+- SMB 共有、UPnP/DLNA サーバー、この Mac のフォルダから音声を参照して再生できます。フォルダ、キュー、シークに対応し、ラジオと同じ操作で再生できます。
 - ライト、ダーク、システムの外観を選択できます。インターフェースは簡体字中国語、繁体字中国語、英語、日本語、韓国語、タイ語、スペイン語、アラビア語に対応しています。
 - 初期設定では起動時に自動再生されません。設定で変更できます。
 
@@ -134,6 +138,7 @@ Wavelet은 macOS용 개인 인터넷 라디오입니다. 처음 실행하면 방
 - 재생, 일시 정지, 스트림 전환, 음량, 즐겨찾기와 취침 타이머를 지원합니다.
 - 방송국 데이터는 Mac에 저장됩니다. 네트워크 JSON은 사용자가 시작한 HTTPS 가져오기에만 사용되며 오디오는 추가한 방송국에 연결됩니다.
 - macOS 메뉴 막대에서 현재 방송국을 확인하고 재생을 제어할 수 있습니다.
+- SMB 공유, UPnP/DLNA 서버 및 이 Mac의 폴더에서 오디오를 찾아 재생할 수 있습니다. 폴더, 대기열, 탐색을 지원하며 라디오와 같은 컨트롤을 사용합니다.
 - 라이트, 다크 또는 시스템 모양을 선택할 수 있으며, 인터페이스는 중국어 간체, 중국어 번체, 영어, 일본어, 한국어, 태국어, 스페인어, 아랍어를 지원합니다.
 - 기본적으로 앱 실행 시 자동으로 재생되지 않으며, 설정에서 변경할 수 있습니다.
 
@@ -163,6 +168,7 @@ Wavelet เป็นวิทยุอินเทอร์เน็ตส่ว
 - รองรับเล่น หยุดชั่วคราว สลับสตรีม ปรับเสียง รายการโปรด และตั้งเวลาปิด
 - ข้อมูลสถานีเก็บไว้ใน Mac; ดาวน์โหลด JSON ผ่าน HTTPS เฉพาะเมื่อคุณเริ่มนำเข้า ส่วนเสียงจะเชื่อมต่อกับสถานีที่คุณเพิ่ม
 - ดูสถานีปัจจุบันและควบคุมการเล่นจากแถบเมนูของ macOS
+- เรียกดูและเล่นเสียงจากแชร์ SMB เซิร์ฟเวอร์ UPnP/DLNA และโฟลเดอร์บน Mac นี้ รองรับโฟลเดอร์ คิว การเลื่อนตำแหน่ง และควบคุมเหมือนวิทยุ
 - เลือกธีมสว่าง มืด หรือตามระบบ อินเทอร์เฟซรองรับภาษาจีนตัวย่อ ภาษาจีนตัวเต็ม ภาษาอังกฤษ ภาษาญี่ปุ่น ภาษาเกาหลี ภาษาไทย ภาษาสเปน และภาษาอาหรับ
 - ค่าเริ่มต้นจะไม่เล่นอัตโนมัติเมื่อเปิดแอป และเปลี่ยนได้ในการตั้งค่า
 
@@ -192,6 +198,7 @@ Wavelet es un reproductor de radio por internet personal para macOS. La lista co
 - Reproduce, pausa, cambia la fuente, ajusta el volumen, guarda Favoritos y configura el temporizador.
 - Los datos se guardan en este Mac. El JSON de red solo se descarga por HTTPS cuando inicias la importación; el audio conecta con las emisoras que añades.
 - Consulta la emisora actual y controla la reproducción desde la barra de menús de macOS.
+- Explora y reproduce audio de recursos compartidos SMB, servidores UPnP/DLNA y carpetas de este Mac. Admite carpetas, colas, búsqueda de posición y los mismos controles que la radio.
 - Elige la apariencia clara, oscura o del sistema; la interfaz está disponible en chino simplificado, chino tradicional, inglés, japonés, coreano, tailandés, español y árabe.
 - De forma predeterminada, la reproducción no se inicia automáticamente al abrir la app; puedes cambiarlo en Ajustes.
 
@@ -223,6 +230,7 @@ Wavelet مشغل راديو إنترنت شخصي لنظام macOS. تبدأ ق�
 - يدعم التشغيل والإيقاف المؤقت وتبديل البث وضبط الصوت والمفضلة ومؤقت النوم.
 - تُحفظ بيانات المحطات على هذا الـ Mac. لا يُنزّل JSON عبر HTTPS إلا عند بدء الاستيراد، ويتصل الصوت بالمحطات التي تضيفها.
 - اعرض المحطة الحالية وتحكّم في التشغيل من شريط القوائم في macOS.
+- استعرض الصوت وشغّله من مشاركات SMB وخوادم UPnP/DLNA ومجلدات على هذا الـ Mac. يدعم المجلدات وقوائم التشغيل والانتقال، مع عناصر التحكم نفسها.
 - اختر المظهر الفاتح أو الداكن أو حسب النظام؛ تتوفر الواجهة بالصينية المبسطة والصينية التقليدية والإنجليزية واليابانية والكورية والتايلاندية والإسبانية والعربية.
 - افتراضيًا، لا يبدأ التشغيل تلقائيًا عند فتح التطبيق؛ ويمكنك تغيير ذلك من الإعدادات.
 

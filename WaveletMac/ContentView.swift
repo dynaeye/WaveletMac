@@ -23,6 +23,7 @@ struct ContentView: View {
 
     @ObservedObject var store: RadioCatalogStore
     @ObservedObject private var player: PlaybackEngine
+    @Environment(\.openWindow) private var openWindow
     @State private var drawer: Drawer?
     @State private var showsPersonalManager = false
     @State private var showsPlaybackStatus = false
@@ -148,7 +149,7 @@ struct ContentView: View {
                         .background(Color(hex: 0x222D22), in: Circle())
                         .overlay(Circle().strokeBorder(.white.opacity(0.1)))
                 }
-                .disabled(player.station == nil)
+                .disabled(!player.hasPlayableItem)
                 .accessibilityLabel(t(player.state.isActive ? "暂停播放" : "开始收听"))
                 Spacer()
                 Button { store.step(1) } label: {
@@ -171,7 +172,7 @@ struct ContentView: View {
 
             HStack(spacing: 9) {
                 Circle().fill(player.state == .failed ? .red : MacDesign.amber).frame(width: 7, height: 7)
-                Text(t(player.state.rawValue)).font(.custom("Noto Sans SC", size: 12))
+                Text(store.statusText()).font(.custom("Noto Sans SC", size: 12)).lineLimit(1)
                 Spacer()
                 if let station = player.station {
                     Button { store.toggleFavorite(station) } label: {
@@ -188,16 +189,33 @@ struct ContentView: View {
                 Text(t(error)).font(.custom("Noto Sans SC", size: 11)).foregroundStyle(MacDesign.amber).lineLimit(2)
             }
 
-            HStack(spacing: 6) {
+            HStack(spacing: 3) {
                 receiverDrawerButton("我的收藏", icon: "heart.fill", target: .favorites)
                 receiverDrawerButton("电台列表", icon: "list.bullet", target: .directory)
                 receiverDrawerButton("设置", icon: "gearshape.fill", target: .settings)
-                receiverDrawerButton("歌曲识别", icon: "waveform", target: .songRecognition)
-                Spacer(minLength: 12)
+                receiverDrawerButton("识别", icon: "waveform", target: .songRecognition, accessibilityTitle: "歌曲识别")
+                Button {
+                    drawer = nil
+                    openWindow(id: "localMedia")
+                    NSApplication.shared.activate(ignoringOtherApps: true)
+                } label: {
+                    Label(t("本地媒体"), systemImage: "externaldrive.connected.to.line.below")
+                        .font(.custom("Noto Sans SC", size: 10.5).weight(.medium))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                        .padding(.horizontal, 3)
+                        .frame(height: 32)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(Color(hex: 0xC4CDBE))
+                .help(t("浏览本地音频"))
+                .accessibilityLabel(t("本地媒体"))
+                Spacer(minLength: 8)
                 Image(nsImage: MacDesign.bottomLogo)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 90, height: 20)
+                    .frame(width: 72, height: 17)
                     .accessibilityLabel("Wavelet")
             }
         }
@@ -211,12 +229,17 @@ struct ContentView: View {
 
     private var tuningScreen: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack { Text("INTERNET RADIO"); Spacer(); Text(statusCode) }
+            HStack {
+                Text(player.localTrack != nil ? "LOCAL MEDIA" : "INTERNET RADIO")
+                Spacer()
+                Text(statusCode)
+            }
                 .font(.custom("Space Mono", size: 9).weight(.bold)).tracking(1)
             Rectangle().fill(MacDesign.ink.opacity(0.25)).frame(height: 1)
             HStack(alignment: .lastTextBaseline, spacing: 10) {
-                Text(player.station.map { "\(t($0.regionName)) / \($0.language)" } ?? t("电台之声"))
+                Text(tuningLocation)
                     .font(.custom("Noto Sans SC", size: 11))
+                    .lineLimit(1)
                 Spacer(minLength: 8)
                 HStack(alignment: .lastTextBaseline, spacing: 4) {
                     Text(channelNumber).font(.custom("Inter", size: 30))
@@ -224,12 +247,12 @@ struct ContentView: View {
                 }
             }
             Button { showsPlaybackStatus = true } label: {
-                VStack(alignment: .leading, spacing: player.station == nil ? 3 : 0) {
-                    Text(player.station?.name ?? t("导入您的电台"))
+                VStack(alignment: .leading, spacing: player.displayTitle == nil ? 3 : 0) {
+                    Text(player.displayTitle ?? t("导入您的电台"))
                         .font(.custom("Noto Sans SC", size: 22).weight(.bold))
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    if player.station == nil {
+                    if player.displayTitle == nil {
                         Text(t("电台之声 · 随时相伴"))
                             .font(.custom("Noto Sans SC", size: 11))
                             .fixedSize(horizontal: false, vertical: true)
@@ -258,7 +281,7 @@ struct ContentView: View {
                 }.frame(height: 17)
             }
             HStack {
-                Text(player.station?.category ?? t("电台之声")); Spacer()
+                Text(tuningCategory).lineLimit(1); Spacer()
                 TimelineView(.periodic(from: .now, by: 60)) { context in
                     Text(context.date, format: .dateTime.hour().minute()).font(.custom("Space Mono", size: 11))
                 }
@@ -270,34 +293,48 @@ struct ContentView: View {
 
     private var streamSelector: some View {
         HStack(spacing: 10) {
-            Label(t("播放线路"), systemImage: "point.3.connected.trianglepath.dotted")
-                .font(.custom("Noto Sans SC", size: 12).weight(.medium))
-            Spacer()
-            if let station = player.station, !station.streams.isEmpty {
-                StreamLinePicker(
-                    titles: station.streams.enumerated().map { store.lineTitle($0.offset, format: $0.element.format) },
-                    selection: player.line,
-                    accessibilityTitle: t("播放线路"),
-                    onSelect: player.switchLine
-                )
-                .fixedSize(horizontal: true, vertical: false)
-                .frame(maxWidth: 190, alignment: .trailing)
-            } else { Text(t("暂无线路")).foregroundStyle(.secondary) }
+            if let track = player.localTrack {
+                Label(t("本地播放"), systemImage: "music.note")
+                    .font(.custom("Noto Sans SC", size: 12).weight(.medium))
+                Spacer()
+                Text("\(track.format) · \(track.sourceName)")
+                    .font(.custom("Noto Sans SC", size: 10))
+                    .lineLimit(1)
+                    .foregroundStyle(Color(hex: 0xC4CDBE))
+            } else {
+                Label(t("播放线路"), systemImage: "point.3.connected.trianglepath.dotted")
+                    .font(.custom("Noto Sans SC", size: 12).weight(.medium))
+                Spacer()
+                if let station = player.station, !station.streams.isEmpty {
+                    StreamLinePicker(
+                        titles: station.streams.enumerated().map { store.lineTitle($0.offset, format: $0.element.format) },
+                        selection: player.line,
+                        accessibilityTitle: t("播放线路"),
+                        onSelect: player.switchLine
+                    )
+                    .fixedSize(horizontal: true, vertical: false)
+                    .frame(maxWidth: 190, alignment: .trailing)
+                } else { Text(t("暂无线路")).foregroundStyle(.secondary) }
+            }
         }
         .padding(.horizontal, 12).frame(minHeight: 38)
         .background(.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 10))
     }
 
-    private func receiverDrawerButton(_ title: String, icon: String, target: Drawer) -> some View {
+    private func receiverDrawerButton(_ title: String, icon: String, target: Drawer, accessibilityTitle: String? = nil) -> some View {
         Button { toggleDrawer(target) } label: {
             Label(t(title), systemImage: icon)
-                .font(.custom("Noto Sans SC", size: 11).weight(.medium))
-                .padding(.horizontal, 4)
+                .font(.custom("Noto Sans SC", size: 10.5).weight(.medium))
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .padding(.horizontal, 3)
                 .frame(height: 32)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .foregroundStyle(drawer == target ? MacDesign.amber : Color(hex: 0xC4CDBE))
+        .help(t(accessibilityTitle ?? title))
+        .accessibilityLabel(t(accessibilityTitle ?? title))
     }
 
     private func toggleDrawer(_ target: Drawer) {
@@ -665,14 +702,35 @@ struct ContentView: View {
     }
 
     private var channelNumber: String {
-        store.stations.firstIndex { $0.id == player.station?.id }.map { String(format: "%02d", $0 + 1) } ?? "––"
+        if player.localTrack != nil { return "0" }
+        return store.stations.firstIndex { $0.id == player.station?.id }.map { String(format: "%02d", $0 + 1) } ?? "––"
     }
     private var needlePosition: Double {
+        if player.localTrack != nil { return 0.5 }
         guard let index = store.stations.firstIndex(where: { $0.id == player.station?.id }) else { return 0.45 }
         return 0.02 + Double(index) / Double(max(1, store.stations.count - 1)) * 0.94
     }
+    private var tuningLocation: String {
+        if let track = player.localTrack {
+            return "\(track.sourceName) / \(track.format)"
+        }
+        return player.station.map { "\(t($0.regionName)) / \($0.language)" } ?? t("电台之声")
+    }
+    private var tuningCategory: String {
+        if let track = player.localTrack {
+            return track.detail.isEmpty ? t("本地播放") : track.detail
+        }
+        return player.station?.category ?? t("电台之声")
+    }
     private var statusCode: String {
-        switch player.state { case .ready: "READY"; case .connecting: "CONNECTING"; case .buffering: "BUFFERING"; case .playing: "LIVE"; case .paused: "PAUSED"; case .failed: "FAILED" }
+        switch player.state {
+        case .ready: "READY"
+        case .connecting: "CONNECTING"
+        case .buffering: "BUFFERING"
+        case .playing: player.localTrack != nil ? "LOCAL" : "LIVE"
+        case .paused: "PAUSED"
+        case .failed: "FAILED"
+        }
     }
     private func drawerTitle(_ drawer: Drawer) -> String {
         switch drawer { case .favorites: t("我的收藏"); case .directory: t("电台列表"); case .settings: t("设置"); case .songRecognition: t("歌曲识别") }
@@ -704,32 +762,36 @@ struct ContentView: View {
                 Color.black.opacity(0.28).ignoresSafeArea()
                     .onTapGesture { showsPlaybackStatus = false }
                 VStack(spacing: 14) {
-                    HStack {
-                        Text(t("播放状态")).font(.headline)
-                        Spacer()
-                        Button { showsPlaybackStatus = false } label: { Image(systemName: "xmark.circle.fill") }
-                            .buttonStyle(.plain).foregroundStyle(.secondary)
-                    }
-                    if let station = player.station {
+                    Text(t("播放状态"))
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    if let track = player.localTrack {
+                        Text(track.title).font(.title2.weight(.bold)).multilineTextAlignment(.center)
+                        Text(track.subtitle).font(.callout).foregroundStyle(.secondary)
+                        Text("\(track.format) · \(track.sourceName)")
+                            .font(.caption).foregroundStyle(.secondary).lineLimit(2)
+                        Text(store.statusText()).font(.callout.weight(.medium))
+                    } else if let station = player.station {
                         Text(station.name).font(.title2.weight(.bold)).multilineTextAlignment(.center)
                         Text(store.subtitle(station)).font(.callout).foregroundStyle(.secondary)
                         if let stream = station.streams.indices.contains(player.line) ? station.streams[player.line].url : nil {
                             Text(stream.absoluteString).font(.caption).foregroundStyle(.secondary).lineLimit(2).textSelection(.enabled)
                         }
                         Text(t(player.state.rawValue)).font(.callout.weight(.medium))
-                        HStack {
-                            Button { player.toggle() } label: {
-                                Label(t(player.state.isActive ? "暂停播放" : "开始收听"), systemImage: player.state.isActive ? "pause.fill" : "play.fill")
-                            }.buttonStyle(.borderedProminent).disabled(player.station == nil)
-                            Button(t("关闭")) { player.clearStation() }.buttonStyle(.bordered)
-                        }
                     } else {
                         ContentUnavailableView {
                             Label(t("尚未添加电台"), systemImage: "radio")
                         } description: {
                             Text(t("添加或导入你的第一个电台"))
                         } actions: {
-                            Button(t("管理个人电台"), action: openPersonalManager).buttonStyle(.borderedProminent)
+                            HStack {
+                                Button(t("管理个人电台"), action: openPersonalManager).buttonStyle(.borderedProminent)
+                                Button(t("浏览本地音频")) {
+                                    showsPlaybackStatus = false
+                                    openWindow(id: "localMedia")
+                                    NSApplication.shared.activate(ignoringOtherApps: true)
+                                }.buttonStyle(.bordered)
+                            }
                         }
                     }
                 }

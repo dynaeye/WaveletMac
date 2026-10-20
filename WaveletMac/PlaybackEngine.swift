@@ -23,6 +23,11 @@ final class PlaybackEngine: ObservableObject {
     @Published private(set) var station: Station?
     @Published private(set) var state: PlaybackState = .ready
     @Published private(set) var line = 0
+    @Published private(set) var localTrack: LocalAudioTrack?
+    @Published private(set) var localQueue: [LocalAudioTrack] = []
+    @Published private(set) var localIndex = 0
+    @Published private(set) var localDuration: TimeInterval = 0
+    @Published private(set) var localPosition: TimeInterval = 0
     @Published private(set) var errorMessage: String?
     @Published private(set) var sleepDeadline: Date?
     @Published private(set) var now = Date()
@@ -54,10 +59,22 @@ final class PlaybackEngine: ObservableObject {
     private var remoteCommandTargets: [(MPRemoteCommand, Any)] = []
     private var workspaceObservers: [NSObjectProtocol] = []
     private var audioOutputMonitor: AudioOutputMonitor?
+    private var localEndObserver: NSObjectProtocol?
+    private var lastNowPlayingSecond = -1
+    private var consecutiveLocalFailures = 0
 
     var currentStreamURL: URL? {
+        if let localTrack { return localTrack.url }
         guard let station, station.streams.indices.contains(line) else { return nil }
         return station.streams[line].url
+    }
+
+    var isLocalPlayback: Bool { localTrack != nil }
+    var hasPlayableItem: Bool { station != nil || localTrack != nil }
+    var displayTitle: String? { localTrack?.title ?? station?.name }
+    var displaySubtitle: String? {
+        if let localTrack { return localTrack.subtitle }
+        return station?.subtitle
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -72,7 +89,8 @@ final class PlaybackEngine: ObservableObject {
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 isOnline = online
-                if !online && state.isActive {
+                if !online, state.isActive {
+                    if let localTrack, !localTrack.isNetworkSource { return }
                     fail("网络已断开。恢复网络后，请点击播放重连。")
                 }
             }
@@ -118,6 +136,7 @@ final class PlaybackEngine: ObservableObject {
     }
 
     func restore(_ station: Station, line: Int) {
+        clearLocalState()
         self.station = station
         self.line = station.streams.indices.contains(line) ? line : 0
         state = .ready
@@ -125,9 +144,10 @@ final class PlaybackEngine: ObservableObject {
         updateNowPlaying()
     }
 
-    /// Releases all station-specific audio and timer state while keeping the engine reusable.
+    /// Releases all station- and file-specific audio and timer state while keeping the engine reusable.
     func clearStation() {
         stopCurrentItem()
+        clearLocalState()
         triedLines.removeAll()
         sleepDeadline = nil
         station = nil
@@ -154,6 +174,28 @@ final class PlaybackEngine: ObservableObject {
     }
 
     func play() {
+        if let localTrack {
+            guard isOnline || !localTrack.isNetworkSource else {
+                fail("网络不可用，请连接网络后重试。")
+                return
+            }
+            if player.currentItem == nil || state == .failed {
+                startLocalItem(localTrack)
+            } else if localQueue.count > 1, localIndex == localQueue.count - 1,
+                      localDuration > 0, localPosition >= localDuration - 0.5 {
+                localIndex = 0
+                startLocalItem(localQueue[0])
+            } else {
+                if localDuration > 0, localPosition >= localDuration - 0.5 {
+                    seekLocal(to: 0)
+                }
+                player.play()
+                state = .buffering
+                errorMessage = nil
+                updateNowPlaying()
+            }
+            return
+        }
         guard station != nil else { return }
         guard isOnline else {
             fail("网络不可用，请连接网络后重试。")
@@ -164,10 +206,125 @@ final class PlaybackEngine: ObservableObject {
     }
 
     func pause() {
+        if localTrack != nil {
+            player.pause()
+            state = .paused
+            errorMessage = nil
+            updateNowPlaying()
+            return
+        }
         stopCurrentItem()
         state = station == nil ? .ready : .paused
         errorMessage = nil
         updateNowPlaying()
+    }
+
+    // MARK: Local files
+
+    func playLocal(_ track: LocalAudioTrack, queue: [LocalAudioTrack]) {
+        guard isOnline || !track.isNetworkSource else {
+            fail("网络不可用，请连接网络后重试。")
+            return
+        }
+        stopCurrentItem()
+        clearLocalState()
+        station = nil
+        line = 0
+        triedLines.removeAll()
+        if queue.contains(where: { $0.id == track.id }) {
+            localQueue = queue
+        } else {
+            localQueue = [track] + queue
+        }
+        localIndex = localQueue.firstIndex { $0.id == track.id } ?? 0
+        consecutiveLocalFailures = 0
+        startLocalItem(localQueue[localIndex])
+    }
+
+    func stepLocal(_ delta: Int) {
+        guard !localQueue.isEmpty else { return }
+        localIndex = (localIndex + delta + localQueue.count) % localQueue.count
+        startLocalItem(localQueue[localIndex])
+    }
+
+    func seekLocal(to seconds: TimeInterval) {
+        guard localTrack != nil else { return }
+        let upperBound = localDuration > 0 ? localDuration : max(seconds, 0)
+        let clamped = min(max(0, seconds), upperBound)
+        player.seek(
+            to: CMTime(seconds: clamped, preferredTimescale: 600),
+            toleranceBefore: .zero,
+            toleranceAfter: .zero
+        )
+        localPosition = clamped
+        updateNowPlaying()
+    }
+
+    func clearLocalPlayback() {
+        stopCurrentItem()
+        clearLocalState()
+        state = .ready
+        errorMessage = nil
+        updateNowPlaying()
+    }
+
+    private func startLocalItem(_ track: LocalAudioTrack) {
+        stopCurrentItem()
+        localTrack = track
+        localDuration = track.durationHint ?? 0
+        localPosition = 0
+        lastNowPlayingSecond = -1
+        errorMessage = nil
+        state = .connecting
+        let item = AVPlayerItem(url: track.url)
+        observeLocalEnd(of: item)
+        player.replaceCurrentItem(with: item)
+        player.play()
+        updateNowPlaying()
+    }
+
+    private func observeLocalEnd(of item: AVPlayerItem) {
+        removeEndObserver()
+        localEndObserver = NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime,
+            object: item,
+            queue: .main
+        ) { [weak self, weak item] _ in
+            Task { @MainActor [weak self, weak item] in
+                guard let self, let item, self.player.currentItem === item else { return }
+                self.advanceLocal()
+            }
+        }
+    }
+
+    private func removeEndObserver() {
+        if let localEndObserver {
+            NotificationCenter.default.removeObserver(localEndObserver)
+            self.localEndObserver = nil
+        }
+    }
+
+    private func advanceLocal() {
+        guard !localQueue.isEmpty else { return }
+        if localIndex + 1 < localQueue.count {
+            localIndex += 1
+            startLocalItem(localQueue[localIndex])
+        } else {
+            player.pause()
+            state = .paused
+            localPosition = localDuration
+            updateNowPlaying()
+        }
+    }
+
+    private func clearLocalState() {
+        removeEndObserver()
+        localTrack = nil
+        localQueue = []
+        localIndex = 0
+        localDuration = 0
+        localPosition = 0
+        lastNowPlayingSecond = -1
     }
 
     func switchLine(_ index: Int) {
@@ -229,6 +386,13 @@ final class PlaybackEngine: ObservableObject {
 
     private func pauseForSystemChange(_ message: String) {
         guard state.isActive else { return }
+        if localTrack != nil {
+            player.pause()
+            state = .paused
+            errorMessage = message
+            updateNowPlaying()
+            return
+        }
         stopCurrentItem()
         state = .paused
         errorMessage = message
@@ -238,6 +402,7 @@ final class PlaybackEngine: ObservableObject {
     private func stopCurrentItem() {
         player.pause()
         player.replaceCurrentItem(with: nil)
+        removeEndObserver()
     }
 
     func persistVolume() {
@@ -254,6 +419,10 @@ final class PlaybackEngine: ObservableObject {
         if let sleepDeadline, sleepDeadline <= currentTime {
             self.sleepDeadline = nil
             pause()
+            return
+        }
+        if localTrack != nil {
+            tickLocal()
             return
         }
         guard state.isActive, let item = player.currentItem else { return }
@@ -287,6 +456,55 @@ final class PlaybackEngine: ObservableObject {
         }
     }
 
+    private func tickLocal() {
+        guard let item = player.currentItem else { return }
+        if item.status == .failed {
+            consecutiveLocalFailures += 1
+            if localQueue.count > 1, consecutiveLocalFailures < localQueue.count {
+                stepLocal(1)
+            } else {
+                consecutiveLocalFailures = 0
+                fail("无法播放此音频。")
+            }
+            return
+        }
+        if state == .playing { consecutiveLocalFailures = 0 }
+
+        let duration = item.duration.seconds
+        if duration.isFinite, duration > 0 {
+            localDuration = duration
+        }
+        let position = player.currentTime().seconds
+        if position.isFinite {
+            localPosition = max(0, position)
+        }
+
+        if item.status == .readyToPlay {
+            switch player.timeControlStatus {
+            case .playing:
+                if state != .playing {
+                    state = .playing
+                    updateNowPlaying()
+                }
+            case .waitingToPlayAtSpecifiedRate:
+                if state == .connecting {
+                    state = .buffering
+                    updateNowPlaying()
+                }
+            case .paused:
+                break
+            @unknown default:
+                break
+            }
+        }
+
+        let second = Int(localPosition)
+        if state == .playing, second != lastNowPlayingSecond {
+            lastNowPlayingSecond = second
+            updateNowPlaying()
+        }
+    }
+
     private func configureRemoteCommands() {
         let commands = MPRemoteCommandCenter.shared()
         bind(commands.playCommand) { $0.play() }
@@ -306,6 +524,21 @@ final class PlaybackEngine: ObservableObject {
     }
 
     private func updateNowPlaying() {
+        if let localTrack {
+            var info: [String: Any] = [
+                MPMediaItemPropertyTitle: localTrack.title,
+                MPNowPlayingInfoPropertyPlaybackRate: state == .playing ? 1.0 : 0.0,
+                MPNowPlayingInfoPropertyIsLiveStream: false
+            ]
+            if !localTrack.artist.isEmpty { info[MPMediaItemPropertyArtist] = localTrack.artist }
+            if !localTrack.album.isEmpty { info[MPMediaItemPropertyAlbumTitle] = localTrack.album }
+            if localDuration > 0 {
+                info[MPMediaItemPropertyPlaybackDuration] = localDuration
+                info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = localPosition
+            }
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+            return
+        }
         guard let station else {
             MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
             return

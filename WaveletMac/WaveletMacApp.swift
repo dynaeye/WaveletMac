@@ -31,9 +31,22 @@ struct WaveletMacApp: App {
         .commands {
             CommandGroup(replacing: .newItem) { }
         }
+
+        Window(store.text("本地媒体库"), id: "localMedia") {
+            LocalMediaLibraryView(store: store)
+                .environment(\.locale, store.interfaceLocale)
+        }
+        .defaultSize(width: 900, height: 620)
+        .windowResizability(.contentSize)
+        .defaultLaunchBehavior(.suppressed)
     }
 }
 
+@MainActor
 final class WaveletApplicationDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        SMBMountManager.shared.shutdown()
+    }
 }

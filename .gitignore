@@ -16,3 +16,6 @@ scripts/mt-cache.json
 
 # macOS
 .DS_Store
+
+# Local test deliverables
+dist/

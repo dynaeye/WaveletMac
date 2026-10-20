@@ -4,6 +4,7 @@ import Foundation
 @MainActor
 final class RadioCatalogStore: ObservableObject {
     let player: PlaybackEngine
+    let media: LocalMediaStore
     @Published private(set) var stations: [Station] = []
     @Published private(set) var loadError: String?
     @Published private(set) var lastImportDuplicateCount = 0
@@ -36,7 +37,9 @@ final class RadioCatalogStore: ObservableObject {
     ) {
         self.defaults = defaults
         self.repository = repository
-        player = PlaybackEngine(defaults: defaults)
+        let engine = PlaybackEngine(defaults: defaults)
+        player = engine
+        media = LocalMediaStore(player: engine, defaults: defaults)
         favoriteIDs = defaults.stringArray(forKey: favoritesKey) ?? []
         languagePreference = defaults.string(forKey: languageKey) ?? "跟随系统"
         themePreference = defaults.string(forKey: themeKey) ?? "跟随系统"
@@ -132,10 +135,22 @@ final class RadioCatalogStore: ObservableObject {
     }
 
     func step(_ delta: Int) {
+        if player.localTrack != nil {
+            player.stepLocal(delta)
+            return
+        }
         let list = filteredStations.isEmpty ? stations : filteredStations
         guard !list.isEmpty else { return }
         let current = list.firstIndex { $0.id == player.station?.id } ?? (delta > 0 ? -1 : 0)
         play(list[(current + delta + list.count) % list.count])
+    }
+
+    func statusText() -> String {
+        if player.localTrack != nil {
+            if player.state == .failed { return text("播放失败") }
+            if player.state == .playing { return text("正在播放") }
+        }
+        return text(player.state.rawValue)
     }
 
     func setLanguage(_ value: String) {
@@ -478,7 +493,8 @@ enum MacLocalization {
         if language == "繁體中文" {
             return key.applyingTransform(StringTransform("Simplified-Traditional"), reverse: false) ?? key
         }
-        guard let index = languages.firstIndex(of: language), let row = translations[key] else { return key }
+        guard let index = languages.firstIndex(of: language) else { return key }
+        guard let row = mediaTranslations[key] ?? translations[key] else { return key }
         return row[index]
     }
 

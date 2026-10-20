@@ -58,7 +58,7 @@ final class RadioStatusBarController: NSObject, ObservableObject, NSMenuDelegate
     private func update() {
         guard let store, let item = statusItem, let container = item.button else { return }
         let player = store.player
-        let name = player.station?.name ?? "Wavelet"
+        let name = player.displayTitle ?? "Wavelet"
         let title = name.count > 8 ? String(name.prefix(8)) + "…" : name
         let font = NSFont.menuBarFont(ofSize: 11)
         stationButton.attributedTitle = NSAttributedString(string: " " + title, attributes: [
@@ -74,7 +74,7 @@ final class RadioStatusBarController: NSObject, ObservableObject, NSMenuDelegate
         playbackButton.frame = NSRect(x: leadingWidth + 4, y: 0, width: 24, height: height)
         playbackButton.image = NSImage(systemSymbolName: player.state.isActive ? "pause.fill" : "play.fill", accessibilityDescription: nil)
         playbackButton.symbolConfiguration = NSImage.SymbolConfiguration(pointSize: 11, weight: .regular)
-        playbackButton.isEnabled = player.station != nil
+        playbackButton.isEnabled = player.hasPlayableItem
         let actionTitle = store.text(player.state.isActive ? "暂停" : "开始收听")
         playbackButton.toolTip = actionTitle
         playbackButton.setAccessibilityLabel(actionTitle)
@@ -86,13 +86,15 @@ final class RadioStatusBarController: NSObject, ObservableObject, NSMenuDelegate
     @objc private func openMenu() {
         guard let store, let item = statusItem, let button = item.button else { return }
         menu.removeAllItems()
-        addItem(store.player.station?.name ?? "Wavelet", action: nil)
-        addItem(store.text(store.player.state.rawValue), action: nil)
+        addItem(store.player.displayTitle ?? "Wavelet", action: nil)
+        addItem(store.statusText(), action: nil)
         menu.addItem(.separator())
         addItem(store.text(store.player.state.isActive ? "暂停" : "开始收听"), action: #selector(togglePlayback))
-        addItem(store.text("上一台"), action: #selector(previousStation))
-        addItem(store.text("下一台"), action: #selector(nextStation))
-        if let station = store.player.station {
+        addItem(store.text(store.player.localTrack != nil ? "上一首" : "上一台"), action: #selector(previousStation))
+        addItem(store.text(store.player.localTrack != nil ? "下一首" : "下一台"), action: #selector(nextStation))
+        if store.player.localTrack != nil {
+            addItem(store.text("本地播放"), action: nil)
+        } else if let station = store.player.station {
             let lineMenu = NSMenu()
             for (index, stream) in station.streams.enumerated() {
                 let line = NSMenuItem(title: store.lineTitle(index, format: stream.format), action: #selector(switchLine(_:)), keyEquivalent: "")
@@ -148,8 +150,8 @@ struct MenuBarView: View {
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
-        Text(player.station?.name ?? "Wavelet")
-        Label(store.text(player.state.rawValue), systemImage: statusIcon)
+        Text(player.displayTitle ?? "Wavelet")
+        Label(store.statusText(), systemImage: statusIcon)
 
         Divider()
 
@@ -158,13 +160,13 @@ struct MenuBarView: View {
         } label: {
             Label(store.text(player.state.isActive ? "暂停" : "开始收听"), systemImage: player.state.isActive ? "pause.fill" : "play.fill")
         }
-        .disabled(player.station == nil)
+        .disabled(!player.hasPlayableItem)
 
         Button { store.step(-1) } label: {
-            Label(store.text("上一台"), systemImage: "backward.end.fill")
+            Label(store.text(player.localTrack != nil ? "上一首" : "上一台"), systemImage: "backward.end.fill")
         }
         Button { store.step(1) } label: {
-            Label(store.text("下一台"), systemImage: "forward.end.fill")
+            Label(store.text(player.localTrack != nil ? "下一首" : "下一台"), systemImage: "forward.end.fill")
         }
 
         if let station = player.station {
