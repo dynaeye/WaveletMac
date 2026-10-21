@@ -74,6 +74,28 @@ enum SMBAddress {
         return value.isEmpty ? nil : value
     }
 
+    /// Splits a full SMB URL such as `smb://user@host/share` into host and share.
+    static func hostAndShare(_ raw: String) -> (host: String, share: String?)? {
+        var value = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !value.isEmpty else { return nil }
+        if value.lowercased().hasPrefix("smb://") {
+            value = String(value.dropFirst("smb://".count))
+        }
+        let hostPart: String
+        var sharePart: String?
+        if let slash = value.firstIndex(of: "/") {
+            hostPart = String(value[..<slash])
+            var path = String(value[value.index(after: slash)...])
+            path = path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            if let next = path.firstIndex(of: "/") { path = String(path[..<next]) }
+            sharePart = normalizedShare(path)
+        } else {
+            hostPart = value
+        }
+        guard let host = normalizedHost(hostPart) else { return nil }
+        return (host, sharePart)
+    }
+
     static func normalizedShare(_ raw: String) -> String? {
         let value = raw.trimmingCharacters(in: .whitespacesAndNewlines)
             .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
@@ -108,6 +130,11 @@ enum SMBAddress {
         return components.url
     }
 
+    static func serverURL(host rawHost: String) -> URL? {
+        guard let host = normalizedHost(rawHost) else { return nil }
+        return URL(string: "smb://\(host)")
+    }
+
     static func detail(host: String, share: String) -> String {
         "\(normalizedHost(host) ?? host)/\(normalizedShare(share) ?? share)"
     }
@@ -140,17 +167,34 @@ final class SMBMountManager {
         if let pending = pendingMounts[source.id] {
             return try await pending.value
         }
-        guard let url = SMBAddress.shareURL(host: source.host, share: source.share) else {
-            throw MediaFailure("SMB 服务器地址不能为空。")
-        }
         let mountPoint = baseDirectory.appendingPathComponent(source.id, isDirectory: true)
         let task = Task<URL, Error> {
-            try await Self.performMount(
-                source: source,
-                url: url,
-                mountPoint: mountPoint,
-                password: password
-            )
+            var variants = [source.share]
+            let lower = source.share.lowercased()
+            if lower != source.share { variants.append(lower) }
+            let upper = source.share.uppercased()
+            if upper != source.share, !variants.contains(upper) { variants.append(upper) }
+
+            var lastError: Error?
+            for (index, share) in variants.enumerated() {
+                var candidate = source
+                candidate.share = share
+                guard let variantURL = SMBAddress.shareURL(host: source.host, share: share) else { continue }
+                do {
+                    return try await Self.performMount(
+                        source: candidate,
+                        url: variantURL,
+                        mountPoint: mountPoint,
+                        password: password
+                    )
+                } catch let failure as MediaFailure where failure.status == 2 && index < variants.count - 1 {
+                    lastError = failure
+                    continue
+                } catch {
+                    throw error
+                }
+            }
+            throw lastError ?? MediaFailure("找不到共享，请检查共享名称。")
         }
         pendingMounts[source.id] = task
         do {
@@ -169,6 +213,103 @@ final class SMBMountManager {
             }
             throw error
         }
+    }
+
+    /// Opens the system SMB share picker for a server URL such as
+    /// `smb://192.168.3.133`, then returns the selected share name.
+    func chooseShare(
+        host rawHost: String,
+        username: String,
+        password: String?,
+        usesGuest: Bool
+    ) async throws -> String {
+        guard let host = SMBAddress.normalizedHost(rawHost),
+              let url = SMBAddress.serverURL(host: host) else {
+            throw MediaFailure("SMB 服务器地址不能为空。")
+        }
+        let mountPoint = baseDirectory.appendingPathComponent("Picker-\(UUID().uuidString)", isDirectory: true)
+        let result = await Task.detached(priority: .userInitiated) { () -> Result<[URL], Error> in
+            do {
+                try FileManager.default.createDirectory(at: mountPoint, withIntermediateDirectories: true)
+                let openOptions = NSMutableDictionary()
+                openOptions[kNAUIOptionKey] = kNAUIOptionAllowUI
+                if usesGuest { openOptions[kNetFSUseGuestKey] = true }
+                let mountOptions = NSMutableDictionary()
+                mountOptions[kNetFSMountAtMountDirKey] = true
+                mountOptions[kNetFSAllowSubMountsKey] = true
+                mountOptions[kNetFSSoftMountKey] = true
+                mountOptions[kNetFSMountFlagsKey] = NSNumber(value: MNT_DONTBROWSE)
+                let user: CFString? = (usesGuest || username.isEmpty) ? nil : (username as CFString)
+                let pass: CFString? = (usesGuest || password == nil) ? nil : (password! as CFString)
+                var mountpoints: Unmanaged<CFArray>?
+                let status = NetFSMountURLSync(
+                    url as CFURL,
+                    mountPoint as CFURL,
+                    user,
+                    pass,
+                    openOptions,
+                    mountOptions,
+                    &mountpoints
+                )
+                guard status == 0 else { return .failure(Self.mountFailure(status)) }
+                var paths: [URL] = []
+                if let mountpoints {
+                    paths = (mountpoints.takeRetainedValue() as NSArray).compactMap { value in
+                        guard let path = value as? String else { return nil }
+                        return URL(fileURLWithPath: path)
+                    }
+                }
+                return .success(paths.isEmpty ? [mountPoint] : paths)
+            } catch {
+                return .failure(error)
+            }
+        }.value
+
+        let paths: [URL]
+        do {
+            paths = try result.get()
+        } catch {
+            if Self.isSMBMount(mountPoint) { Self.performUnmount(mountPoint) }
+            if !Self.isSMBMount(mountPoint) { try? FileManager.default.removeItem(at: mountPoint) }
+            throw error
+        }
+        var shares: [String] = []
+        for path in paths {
+            if let share = Self.shareName(from: path) { shares.append(share) }
+        }
+        if shares.isEmpty, let share = Self.shareName(from: mountPoint) { shares.append(share) }
+
+        for path in paths where Self.isMountPoint(path) {
+            Self.performUnmount(path)
+        }
+        if Self.isMountPoint(mountPoint) { Self.performUnmount(mountPoint) }
+        if !Self.isSMBMount(mountPoint) { try? FileManager.default.removeItem(at: mountPoint) }
+
+        guard let share = shares.first else {
+            throw MediaFailure("未选择共享。")
+        }
+        return share
+    }
+
+    nonisolated static func isMountPoint(_ path: URL) -> Bool {
+        var info = statfs()
+        guard statfs(path.path, &info) == 0 else { return false }
+        let on = withUnsafeBytes(of: info.f_mntonname) { raw -> String in
+            guard let base = raw.baseAddress else { return "" }
+            return String(cString: base.assumingMemoryBound(to: CChar.self))
+        }
+        return URL(fileURLWithPath: on).standardizedFileURL.path == path.standardizedFileURL.path
+    }
+
+    nonisolated static func shareName(from path: URL) -> String? {
+        var info = statfs()
+        guard statfs(path.path, &info) == 0 else { return nil }
+        let source = withUnsafeBytes(of: info.f_mntfromname) { raw -> String in
+            guard let base = raw.baseAddress else { return "" }
+            return String(cString: base.assumingMemoryBound(to: CChar.self))
+        }
+        guard let share = source.split(separator: "/").last, !share.isEmpty else { return nil }
+        return String(share).removingPercentEncoding ?? String(share)
     }
 
     func unmount(_ sourceID: String) {
@@ -254,7 +395,7 @@ final class SMBMountManager {
                     &mountpoints
                 )
                 guard status == 0 else {
-                    return .failure(mountFailure(status))
+                    return .failure(Self.mountFailure(status))
                 }
                 if let mountpoints {
                     let paths = (mountpoints.takeRetainedValue() as NSArray).compactMap { value -> URL? in

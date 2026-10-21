@@ -211,6 +211,14 @@ final class MediaTests: XCTestCase {
         XCTAssertNil(SMBAddress.shareURL(host: "", share: "Music"))
         XCTAssertEqual(SMBAddress.normalizedHost("  nas.local  "), "nas.local")
         XCTAssertEqual(SMBAddress.normalizedHost("smb://nas.local/Media"), "nas.local")
+
+        let parsed = try XCTUnwrap(SMBAddress.hostAndShare("smb://dynasty@nas.local:445/music/Albums"))
+        XCTAssertEqual(parsed.host, "nas.local:445")
+        XCTAssertEqual(parsed.share, "music")
+        let root = try XCTUnwrap(SMBAddress.hostAndShare("smb://192.168.3.133"))
+        XCTAssertEqual(root.host, "192.168.3.133")
+        XCTAssertNil(root.share)
+        XCTAssertEqual(SMBAddress.serverURL(host: "192.168.3.133")?.absoluteString, "smb://192.168.3.133")
     }
 
     func testSMBFailureMessagesCoverCommonStatuses() {
@@ -442,13 +450,13 @@ final class MediaTests: XCTestCase {
         ))
 
         let saved = try store.saveSMB(
-            SMBSourceConfig(id: "smb-test", name: "", host: "nas.local", share: "Music", username: "guest", usesGuest: true, rememberPassword: false),
+            SMBSourceConfig(id: "smb-test", name: "", host: "smb://192.168.3.133/music", share: "", username: "guest", usesGuest: true, rememberPassword: false),
             password: nil
         )
         XCTAssertEqual(store.smbSources.count, 1)
-        XCTAssertEqual(saved.host, "nas.local")
-        XCTAssertEqual(saved.share, "Music")
-        XCTAssertEqual(saved.displayName, "nas.local/Music")
+        XCTAssertEqual(saved.host, "192.168.3.133")
+        XCTAssertEqual(saved.share, "music")
+        XCTAssertEqual(saved.displayName, "192.168.3.133/music")
 
         let reloaded = LocalMediaStore(
             player: PlaybackEngine(defaults: defaults),
@@ -456,7 +464,7 @@ final class MediaTests: XCTestCase {
             mountManager: manager
         )
         XCTAssertEqual(reloaded.smbSources.count, 1)
-        XCTAssertEqual(reloaded.smbSourceRefs.first?.detail, "SMB · nas.local/Music")
+        XCTAssertEqual(reloaded.smbSourceRefs.first?.detail, "SMB · 192.168.3.133/music")
 
         reloaded.removeSource(try XCTUnwrap(reloaded.smbSourceRefs.first))
         XCTAssertTrue(reloaded.smbSources.isEmpty)

@@ -524,6 +524,7 @@ private struct SMBEditorSheet: View {
     @State private var usesGuest: Bool
     @State private var rememberPassword: Bool
     @State private var errorText: String?
+    @State private var isChoosingShare = false
 
     init(media: LocalMediaStore, existing: SMBSourceConfig?) {
         self.media = media
@@ -546,7 +547,24 @@ private struct SMBEditorSheet: View {
             VStack(alignment: .leading, spacing: 10) {
                 field(t("显示名称"), text: $name, hint: t("可选"))
                 field(t("服务器地址"), text: $host, hint: t("例如 192.168.1.10 或 nas.local"))
-                field(t("共享名称"), text: $share, hint: t("例如 Music"))
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(t("共享名称")).font(.callout.weight(.medium))
+                    HStack(spacing: 8) {
+                        TextField(t("例如 Music"), text: $share)
+                            .textFieldStyle(.roundedBorder)
+                        Button {
+                            chooseShare()
+                        } label: {
+                            if isChoosingShare {
+                                ProgressView().controlSize(.small)
+                            } else {
+                                Label(t("浏览共享…"), systemImage: "folder.badge.gearshape")
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(isChoosingShare)
+                    }
+                }
                 field(t("用户名"), text: $username, hint: "")
                     .disabled(usesGuest)
                 VStack(alignment: .leading, spacing: 4) {
@@ -560,6 +578,10 @@ private struct SMBEditorSheet: View {
                     .disabled(usesGuest)
             }
 
+            Text(t("服务器地址可填 smb://192.168.1.10；共享名可点「浏览共享」选择。"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
             Text(t("密码保存在 macOS 钥匙串中，不会写入电台目录。"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -580,6 +602,7 @@ private struct SMBEditorSheet: View {
                 Button(t("保存并连接"), action: save)
                     .buttonStyle(.borderedProminent)
                     .keyboardShortcut(.defaultAction)
+                    .disabled(isChoosingShare)
             }
         }
         .padding(22)
@@ -591,6 +614,34 @@ private struct SMBEditorSheet: View {
             Text(title).font(.callout.weight(.medium))
             TextField(hint, text: text)
                 .textFieldStyle(.roundedBorder)
+        }
+    }
+
+    private func chooseShare() {
+        guard !isChoosingShare else { return }
+        isChoosingShare = true
+        errorText = nil
+        Task {
+            do {
+                let selected = try await media.chooseSMBShare(
+                    host: host,
+                    username: username,
+                    password: password.isEmpty ? nil : password,
+                    usesGuest: usesGuest
+                )
+                share = selected
+                if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+                   let normalizedHost = SMBAddress.normalizedHost(host) {
+                    name = "\(normalizedHost)/\(selected)"
+                }
+            } catch {
+                if let failure = error as? MediaFailure, failure.messageKey == "已取消连接。" {
+                    // User closed the system share picker; no error banner.
+                } else {
+                    errorText = media.errorText(for: error)
+                }
+            }
+            isChoosingShare = false
         }
     }
 

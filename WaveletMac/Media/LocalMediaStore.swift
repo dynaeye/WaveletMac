@@ -409,10 +409,18 @@ final class LocalMediaStore: ObservableObject {
     // MARK: SMB
 
     func saveSMB(_ input: SMBSourceConfig, password: String?) throws -> SMBSourceConfig {
-        guard let host = SMBAddress.normalizedHost(input.host) else {
+        var hostInput = input.host
+        var shareInput = input.share
+        if SMBAddress.normalizedShare(shareInput) == nil,
+           let parsed = SMBAddress.hostAndShare(hostInput),
+           let embeddedShare = parsed.share {
+            hostInput = parsed.host
+            shareInput = embeddedShare
+        }
+        guard let host = SMBAddress.normalizedHost(hostInput) else {
             throw MediaFailure("SMB 服务器地址不能为空。")
         }
-        guard let share = SMBAddress.normalizedShare(input.share) else {
+        guard let share = SMBAddress.normalizedShare(shareInput) else {
             throw MediaFailure("SMB 共享名称不能为空。")
         }
         var config = input
@@ -451,6 +459,20 @@ final class LocalMediaStore: ObservableObject {
         }
         saveSources()
         return config
+    }
+
+    func chooseSMBShare(
+        host: String,
+        username: String,
+        password: String?,
+        usesGuest: Bool
+    ) async throws -> String {
+        try await mountManager.chooseShare(
+            host: host,
+            username: username,
+            password: password,
+            usesGuest: usesGuest
+        )
     }
 
     func connectSMB(id: String) async {
