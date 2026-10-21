@@ -35,7 +35,7 @@ targets:
         PRODUCT_NAME: Wavelet
         PRODUCT_MODULE_NAME: WaveletMac
         MARKETING_VERSION: "1.3.1"
-        CURRENT_PROJECT_VERSION: "11"
+        CURRENT_PROJECT_VERSION: "12"
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: WaveletMac/Info.plist
         INFOPLIST_KEY_CFBundleDisplayName: Wavelet
