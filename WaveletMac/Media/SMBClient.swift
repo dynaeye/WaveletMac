@@ -151,12 +151,22 @@ final class SMBMountManager {
     private var pendingMounts: [String: Task<URL, Error>] = [:]
 
     init(baseDirectory: URL? = nil) {
-        self.baseDirectory = baseDirectory ?? FileManager.default.temporaryDirectory
-            .resolvingSymlinksInPath()
+        self.baseDirectory = baseDirectory ?? Self.resolvedTemporaryDirectory()
             .appendingPathComponent("WaveletMediaMounts", isDirectory: true)
         if FileManager.default.fileExists(atPath: self.baseDirectory.path) {
             cleanupStaleMounts()
         }
+    }
+
+    private static func resolvedTemporaryDirectory() -> URL {
+        let temp = FileManager.default.temporaryDirectory
+        var buffer = [CChar](repeating: 0, count: Int(PATH_MAX))
+        let resolved = temp.path.withCString { realpath($0, &buffer) }
+        if resolved != nil {
+            let bytes = buffer.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }
+            return URL(fileURLWithPath: String(decoding: bytes, as: UTF8.self), isDirectory: true)
+        }
+        return temp
     }
 
     func mount(_ source: SMBSourceConfig, password: String?) async throws -> URL {
@@ -487,7 +497,7 @@ final class SMBMountManager {
             return MediaFailure("无法挂载 SMB 共享，请检查地址、共享名称和凭据。", status: status)
         case 13:
             return MediaFailure("认证失败，请检查用户名和密码。", status: status)
-        case 1:
+        case 1, 62:
             return MediaFailure("无法挂载 SMB 共享，请检查系统权限或挂载点。", detail: String(cString: strerror(status)), status: status)
         case 2:
             return MediaFailure("找不到共享，请检查共享名称。", status: status)
