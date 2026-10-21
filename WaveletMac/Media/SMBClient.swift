@@ -168,35 +168,24 @@ final class SMBMountManager {
             return try await pending.value
         }
         let mountPoint = baseDirectory.appendingPathComponent(source.id, isDirectory: true)
+        let effectivePassword = (password?.isEmpty == true) ? nil : password
         let task = Task<URL, Error> {
-            var variants = [source.share]
-            let lower = source.share.lowercased()
-            if lower != source.share { variants.append(lower) }
-            let upper = source.share.uppercased()
-            if upper != source.share, !variants.contains(upper) { variants.append(upper) }
-
-            var lastError: Error?
-            for (index, share) in variants.enumerated() {
-                var candidate = source
-                candidate.share = share
-                guard let variantURL = SMBAddress.shareURL(host: source.host, share: share) else { continue }
-                do {
-                    return try await Self.performMount(
-                        source: candidate,
-                        url: variantURL,
-                        mountPoint: mountPoint,
-                        password: password
-                    )
-                } catch let failure as MediaFailure
-                    where (failure.status == 2 || failure.status == 13 || failure.status == 1)
-                    && index < variants.count - 1 {
-                    lastError = failure
-                    continue
-                } catch {
-                    throw error
-                }
+            do {
+                return try await Self.attemptMount(
+                    source: source,
+                    mountPoint: mountPoint,
+                    password: effectivePassword
+                )
+            } catch let failure as MediaFailure
+                where Self.isCredentialFailure(failure) && effectivePassword != nil {
+                // The app's saved password may be stale. NetFS can use the
+                // credential already stored by macOS (Finder/system Keychain).
+                return try await Self.attemptMount(
+                    source: source,
+                    mountPoint: mountPoint,
+                    password: nil
+                )
             }
-            throw lastError ?? MediaFailure("找不到共享，请检查共享名称。")
         }
         pendingMounts[source.id] = task
         do {
@@ -361,6 +350,46 @@ final class SMBMountManager {
     }
 
     // MARK: NetFS bridge
+
+    nonisolated private static func attemptMount(
+        source: SMBSourceConfig,
+        mountPoint: URL,
+        password: String?
+    ) async throws -> URL {
+        var variants = [source.share]
+        let lower = source.share.lowercased()
+        if lower != source.share { variants.append(lower) }
+        let upper = source.share.uppercased()
+        if upper != source.share, !variants.contains(upper) { variants.append(upper) }
+
+        var lastError: Error?
+        for (index, share) in variants.enumerated() {
+            var candidate = source
+            candidate.share = share
+            guard let variantURL = SMBAddress.shareURL(host: source.host, share: share) else { continue }
+            do {
+                return try await performMount(
+                    source: candidate,
+                    url: variantURL,
+                    mountPoint: mountPoint,
+                    password: password
+                )
+            } catch let failure as MediaFailure
+                where (failure.status == 2 || failure.status == 13 || failure.status == 1)
+                && index < variants.count - 1 {
+                lastError = failure
+                continue
+            } catch {
+                throw error
+            }
+        }
+        throw lastError ?? MediaFailure("找不到共享，请检查共享名称。")
+    }
+
+    nonisolated private static func isCredentialFailure(_ failure: MediaFailure) -> Bool {
+        guard let status = failure.status else { return false }
+        return status == 1 || status == 13 || status == -5997 || status == -6606
+    }
 
     nonisolated private static func performMount(
         source: SMBSourceConfig,

@@ -572,6 +572,9 @@ private struct SMBEditorSheet: View {
                     SecureField(existing == nil ? "" : t("留空表示不更改"), text: $password)
                         .textFieldStyle(.roundedBorder)
                         .disabled(usesGuest)
+                    Text(t("留空时使用 macOS 已保存的 SMB 凭据。"))
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
                 }
                 Toggle(t("访客访问"), isOn: $usesGuest)
                 Toggle(t("记住密码"), isOn: $rememberPassword)
