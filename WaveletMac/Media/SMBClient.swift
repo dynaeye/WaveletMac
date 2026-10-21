@@ -187,7 +187,9 @@ final class SMBMountManager {
                         mountPoint: mountPoint,
                         password: password
                     )
-                } catch let failure as MediaFailure where failure.status == 2 && index < variants.count - 1 {
+                } catch let failure as MediaFailure
+                    where (failure.status == 2 || failure.status == 13 || failure.status == 1)
+                    && index < variants.count - 1 {
                     lastError = failure
                     continue
                 } catch {

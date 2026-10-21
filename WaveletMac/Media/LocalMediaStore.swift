@@ -437,6 +437,12 @@ final class LocalMediaStore: ObservableObject {
         }
 
         let suppliedPassword = password
+        let existingPassword = sessionPasswords[config.id] ?? KeychainStore.password(for: config.id)
+        if !config.usesGuest,
+           (suppliedPassword?.isEmpty ?? true),
+           existingPassword == nil {
+            throw MediaFailure("请输入密码，或选择访客访问。")
+        }
         if let suppliedPassword, !suppliedPassword.isEmpty {
             sessionPasswords[config.id] = suppliedPassword
             if config.rememberPassword {

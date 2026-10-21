@@ -111,6 +111,7 @@ extension MacLocalization {
         "刷新媒体库": ["Refresh Library", "ライブラリを更新", "보관함 새로 고침", "รีเฟรชคลังมีเดีย", "Actualizar biblioteca", "تحديث المكتبة"],
         "正在载入目录…": ["Loading directory…", "ディレクトリを読み込み中…", "디렉터리 불러오는 중…", "กำลังโหลดไดเรกทอรี…", "Cargando directorio…", "جارٍ تحميل الدليل…"],
         "本地音频": ["Local audio", "ローカル音声", "로컬 오디오", "เสียงในเครื่อง", "Audio local", "الصوت المحلي"],
+        "请输入密码，或选择访客访问。": ["Enter a password or enable guest access.", "パスワードを入力するか、ゲストアクセスを有効にしてください。", "암호를 입력하거나 게스트 접근을 활성화하세요.", "โปรดป้อนรหัสผ่านหรือเปิดการเข้าถึงแบบผู้เยี่ยมชม", "Introduce una contraseña o activa el acceso como invitado.", "أدخل كلمة السر أو فعّل وصول الضيف."],
         "此服务器需要用户名和密码。": ["This server requires a username and password.", "このサーバにはユーザ名とパスワードが必要です。", "이 서버에는 사용자 이름과 암호가 필요합니다.", "เซิร์ฟเวอร์นี้ต้องใช้ชื่อผู้ใช้และรหัสผ่าน", "Este servidor requiere un nombre de usuario y una contraseña.", "يتطلب هذا الخادم اسم مستخدم وكلمة سر."],
         "不支持的文件类型。": ["Unsupported file type.", "未対応のファイル形式です。", "지원하지 않는 파일 형식입니다.", "ไม่รองรับชนิดไฟล์นี้", "Tipo de archivo no compatible.", "نوع ملف غير مدعوم."],
         "文件不存在。": ["The file does not exist.", "ファイルが存在しません。", "파일이 존재하지 않습니다.", "ไม่มีไฟล์นี้", "El archivo no existe.", "الملف غير موجود."],
