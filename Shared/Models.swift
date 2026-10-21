@@ -26,8 +26,8 @@ struct Station: Codable, Identifiable, Hashable {
 struct Region: Identifiable {
     let id: String
     let name: String
-    static let all = zip(["cn", "hk", "mo", "tw", "us", "sg", "my", "jp", "other", "tv"],
-                         ["中国大陆", "香港", "澳门", "台湾", "美国", "新加坡", "马来西亚", "日本", "其他地区", "电视伴音"]).map { Region(id: $0, name: $1) }
+    static let all = zip(["cn", "hk", "mo", "tw", "us", "sg", "my", "jp", "th", "kr", "eu", "other", "tv"],
+                         ["中国大陆", "香港", "澳门", "台湾", "美国", "新加坡", "马来西亚", "日本", "泰国", "韩国", "欧洲", "其他地区", "电视伴音"]).map { Region(id: $0, name: $1) }
 }
 
 struct StationCatalog: Codable {
