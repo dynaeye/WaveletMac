@@ -151,10 +151,9 @@ final class SMBMountManager {
     private var pendingMounts: [String: Task<URL, Error>] = [:]
 
     init(baseDirectory: URL? = nil) {
-        self.baseDirectory = baseDirectory ?? FileManager.default
-            .urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("Wavelet", isDirectory: true)
-            .appendingPathComponent("MediaMounts", isDirectory: true)
+        self.baseDirectory = baseDirectory ?? FileManager.default.temporaryDirectory
+            .resolvingSymlinksInPath()
+            .appendingPathComponent("WaveletMediaMounts", isDirectory: true)
         if FileManager.default.fileExists(atPath: self.baseDirectory.path) {
             cleanupStaleMounts()
         }
@@ -486,8 +485,10 @@ final class SMBMountManager {
             return MediaFailure("服务器不允许访客访问，请使用用户名和密码。", status: status)
         case -6600, -6606:
             return MediaFailure("无法挂载 SMB 共享，请检查地址、共享名称和凭据。", status: status)
-        case 1, 13:
+        case 13:
             return MediaFailure("认证失败，请检查用户名和密码。", status: status)
+        case 1:
+            return MediaFailure("无法挂载 SMB 共享，请检查系统权限或挂载点。", detail: String(cString: strerror(status)), status: status)
         case 2:
             return MediaFailure("找不到共享，请检查共享名称。", status: status)
         case 60:
