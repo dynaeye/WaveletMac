@@ -1,4 +1,4 @@
-![Wavelet for macOS](Assets/wavlet_desktop.png)
+![Wavelet for macOS](Assets/wavlet_desktop.jpg)
 
 # Wavelet
 
