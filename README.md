@@ -1,6 +1,6 @@
-# Wavelet
+![Wavelet for macOS](Assets/wavlet_desktop.png)
 
-> **Release status:** The GitHub download below is the previously notarized Wavelet 1.0 build and does not include the personal-radio features described here. The updated Mac build has not been packaged or released yet.
+# Wavelet
 
 ## English
 
@@ -29,11 +29,9 @@ Wavelet 1.3.1 is signed with a Developer ID and notarized by Apple. Download it 
 ### Feedback
 
 If you run into any issues or have suggestions, please submit feedback via [GitHub Issues](https://github.com/dynaeye/WaveletMac/issues).
-For data handling details, see [Personal Radio and Privacy](docs/个人电台使用与隐私说明.md). Developed by Kai.
+For data handling details, see [Personal Radio and Privacy](PRIVACY.md). Developed by Kai.
 
 ## 繁體中文
-
-> **發行狀態：** 下方 GitHub 下載連結是舊版 Wavelet 1.0，尚未包含本文所述的個人電台功能。新版 Mac 尚未打包或發行。
 
 Wavelet 是 macOS 個人網路收音機。初次使用時電台列表為空，你可以手動新增電台，或匯入自己的 Wavelet JSON 電台檔案。
 
@@ -60,11 +58,9 @@ Wavelet 1.3.1 已完成 Developer ID 簽名和 Apple 公證。可從 [GitHub Rel
 ### 問題回饋
 
 如遇到問題或希望提出建議，請在 [GitHub Issues](https://github.com/dynaeye/WaveletMac/issues) 提交回饋。
-資料處理方式請參閱[個人電台與隱私說明](docs/个人电台使用与隐私说明.md)。開發者：Kai。
+資料處理方式請參閱[個人電台與隱私說明](PRIVACY.md)。開發者：Kai。
 
 ## 简体中文
-
-> **发行状态：** 下方 GitHub 下载链接是旧版 Wavelet 1.0，尚未包含本文所述的个人电台功能。新版 Mac 尚未打包或发行。
 
 Wavelet 是 macOS 个人网络收音机。首次使用时电台列表为空，你可以手动添加电台，或导入自己的 Wavelet JSON 电台文件。
 
@@ -91,11 +87,9 @@ Wavelet 1.3.1 已完成 Developer ID 签名和 Apple 公证。可从 [GitHub Rel
 ### 问题反馈
 
 如遇到问题或希望提出建议，请在 [GitHub Issues](https://github.com/dynaeye/WaveletMac/issues) 提交反馈。
-数据处理方式请参阅[个人电台与隐私说明](docs/个人电台使用与隐私说明.md)。开发者：Kai。
+数据处理方式请参阅[个人电台与隐私说明](PRIVACY.md)。开发者：Kai。
 
 ## 日本語
-
-> **リリース状況：** 以下の GitHub ダウンロードは旧 Wavelet 1.0 で、ここに記載した個人用ラジオ機能は含まれていません。新しい Mac 版はまだパッケージ化・公開されていません。
 
 Wavelet は macOS 向けの個人用インターネットラジオです。初回起動時のリストは空です。放送局を手動で追加するか、自分の Wavelet JSON ファイルを読み込めます。
 
@@ -122,11 +116,9 @@ Wavelet は macOS 向けの個人用インターネットラジオです。初�
 ### フィードバック
 
 問題が発生した場合やご提案がある場合は、[GitHub Issues](https://github.com/dynaeye/WaveletMac/issues) でお知らせください。
-データの取り扱いについては[個人用ラジオとプライバシー](docs/个人电台使用与隐私说明.md)をご覧ください。開発者：Kai。
+データの取り扱いについては[個人用ラジオとプライバシー](PRIVACY.md)をご覧ください。開発者：Kai。
 
 ## 한국어
-
-> **릴리스 상태:** 아래 GitHub 다운로드는 이전 Wavelet 1.0이며, 여기에 설명된 개인 라디오 기능은 포함하지 않습니다. 새 Mac 빌드는 아직 패키징되거나 출시되지 않았습니다.
 
 Wavelet은 macOS용 개인 인터넷 라디오입니다. 처음 실행하면 방송국 목록이 비어 있으며, 직접 추가하거나 개인 Wavelet JSON 파일을 가져올 수 있습니다.
 
@@ -156,8 +148,6 @@ Wavelet은 macOS용 개인 인터넷 라디오입니다. 처음 실행하면 방
 
 ## ไทย
 
-> **สถานะการเผยแพร่:** ลิงก์ GitHub ด้านล่างเป็น Wavelet 1.0 รุ่นก่อนหน้า และไม่มีฟีเจอร์วิทยุส่วนบุคคลที่อธิบายไว้ที่นี่ เวอร์ชัน Mac ใหม่ยังไม่ได้จัดแพ็กเกจหรือเผยแพร่
-
 Wavelet เป็นวิทยุอินเทอร์เน็ตส่วนบุคคลสำหรับ macOS รายการสถานีจะว่างเมื่อเริ่มใช้ครั้งแรก คุณสามารถเพิ่มสถานีเองหรือนำเข้าไฟล์ Wavelet JSON ของคุณ
 
 ### คุณสมบัติ
@@ -186,8 +176,6 @@ Wavelet 1.0 รุ่นเดิมผ่านการลงนาม Develop
 
 ## Español
 
-> **Estado de publicación:** La descarga de GitHub siguiente es la versión anterior Wavelet 1.0 y no incluye las funciones de radio personal descritas aquí. La nueva versión para Mac aún no se ha empaquetado ni publicado.
-
 Wavelet es un reproductor de radio por internet personal para macOS. La lista comienza vacía; puedes añadir emisoras o importar tu propio archivo Wavelet JSON.
 
 ### Funciones
@@ -215,8 +203,6 @@ La versión anterior Wavelet 1.0 tiene firma Developer ID y notarización de App
 Si encuentras algún problema o tienes sugerencias, envía tus comentarios a través de [GitHub Issues](https://github.com/dynaeye/WaveletMac/issues).
 
 ## العربية
-
-> **حالة الإصدار:** تنزيل GitHub أدناه هو Wavelet 1.0 السابق ولا يتضمن ميزات الراديو الشخصي الموضحة هنا. لم يتم بعد تجهيز إصدار Mac الجديد أو نشره.
 
 <div dir="rtl">
 
