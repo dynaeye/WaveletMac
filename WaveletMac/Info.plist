@@ -43,7 +43,7 @@
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://github.com/dynaeye/WaveletMac/releases/latest/download/appcast.xml</string>
+	<string>https://www.mythmedia.com/wavelet/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>8yoxS9BzUDutC77VWUh2zl8/d8fXANUms6wu03cxLFo=</string>
 	<key>SUScheduledCheckInterval</key>
