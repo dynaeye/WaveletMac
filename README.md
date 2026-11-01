@@ -2,6 +2,8 @@
 
 # Wavelet
 
+Wavelet 官网: https://www.mythmedia.com/wavelet/
+
 ## English
 
 Wavelet is a personal internet radio player for macOS. Start with an empty list, add stations manually, or import a Wavelet JSON file from your own collection.
