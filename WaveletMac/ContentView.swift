@@ -662,6 +662,22 @@ struct ContentView: View {
                         Button(t("管理个人电台"), action: openPersonalManager)
                     }
                 }
+                settingsSection("关于") {
+                    VStack(spacing: 10) {
+                        HStack {
+                            Label(t("检查更新"), systemImage: "arrow.triangle.2.circlepath")
+                            Spacer()
+                            Button(t("检查更新")) { AppUpdater.checkForUpdates() }
+                        }
+                        Divider()
+                        HStack {
+                            Label(t("访问网站"), systemImage: "globe")
+                            Spacer()
+                            Link("www.mythmedia.com/wavelet", destination: URL(string: "https://www.mythmedia.com/wavelet/")!)
+                                .font(.custom("Inter", size: 12))
+                        }
+                    }
+                }
                 Divider()
                 HStack {
                     Button(t("退出 Wavelet")) {
@@ -794,9 +810,12 @@ struct ContentView: View {
         switch drawer { case .favorites: t("我的收藏"); case .directory: t("电台列表"); case .settings: t("设置"); case .songRecognition: t("歌曲识别") }
     }
     private var drawerHeight: CGFloat {
-        let availableHeight = (TransparentWindowConfigurator.configuredWindow?.screen ?? NSScreen.main)?.visibleFrame.height ?? 900
+        let visibleHeight = (TransparentWindowConfigurator.configuredWindow?.screen ?? NSScreen.main)?.visibleFrame.height ?? 900
         let preferredHeight: CGFloat = 350
-        return min(preferredHeight, max(220, availableHeight - 560))
+        // Keep the panel at its preferred height unless the display itself is tiny;
+        // placement decides where it fits, so it must never be pre-shrunk below the
+        // content's intrinsic height here.
+        return min(preferredHeight, max(DrawerPanelPlacement.minimumContentHeight, visibleHeight - 140))
     }
     private var loadErrorBinding: Binding<Bool> {
         Binding(

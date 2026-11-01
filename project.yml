@@ -14,6 +14,11 @@ settings:
     CLANG_ENABLE_MODULES: YES
     ENABLE_HARDENED_RUNTIME: YES
 
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: "2.10.1"
+
 targets:
   WaveletMac:
     type: application
@@ -29,13 +34,16 @@ targets:
         buildPhase: resources
       - path: Fonts
         buildPhase: resources
+    dependencies:
+      - package: Sparkle
+        product: Sparkle
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.mythmedia.waveletmac
         PRODUCT_NAME: Wavelet
         PRODUCT_MODULE_NAME: WaveletMac
-        MARKETING_VERSION: "1.3.1"
-        CURRENT_PROJECT_VERSION: "12"
+        MARKETING_VERSION: "1.3.2"
+        CURRENT_PROJECT_VERSION: "13"
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: WaveletMac/Info.plist
         INFOPLIST_KEY_CFBundleDisplayName: Wavelet

@@ -30,7 +30,18 @@ struct WaveletMacApp: App {
         .windowResizability(.contentSize)
         .commands {
             CommandGroup(replacing: .newItem) { }
+            CommandGroup(replacing: .appInfo) {
+                Button(store.text("关于 Wavelet")) { openWindow(id: "about") }
+            }
         }
+
+        Window(store.text("关于 Wavelet"), id: "about") {
+            AboutView(store: store)
+                .environment(\.locale, store.interfaceLocale)
+        }
+        .windowStyle(.hiddenTitleBar)
+        .windowResizability(.contentSize)
+        .defaultLaunchBehavior(.suppressed)
 
         Window(store.text("本地媒体库"), id: "localMedia") {
             LocalMediaLibraryView(store: store)
@@ -45,6 +56,10 @@ struct WaveletMacApp: App {
 @MainActor
 final class WaveletApplicationDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        AppUpdater.start()
+    }
 
     func applicationWillTerminate(_ notification: Notification) {
         SMBMountManager.shared.shutdown()

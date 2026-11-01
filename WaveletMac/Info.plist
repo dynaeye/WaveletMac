@@ -40,6 +40,14 @@
 	<string>Wavelet captures only its own system-output audio for up to 20 seconds to identify the song and stops as soon as it finds a match. It does not use the microphone, and the temporary audio remains in memory.</string>
 	<key>NSScreenCaptureUsageDescription</key>
 	<string>Wavelet uses ScreenCaptureKit to capture only its own system-output audio for song identification. No screen image or microphone audio is captured.</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://github.com/dynaeye/WaveletMac/releases/latest/download/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>8yoxS9BzUDutC77VWUh2zl8/d8fXANUms6wu03cxLFo=</string>
+	<key>SUScheduledCheckInterval</key>
+	<integer>86400</integer>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

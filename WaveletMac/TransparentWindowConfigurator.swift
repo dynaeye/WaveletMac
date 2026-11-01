@@ -86,7 +86,9 @@ struct DrawerWindowPresenter: NSViewRepresentable {
             visible = true
             panel.setFrame(target.offsetBy(dx: 0, dy: 18), display: true)
             panel.alphaValue = 0
-            parent.addChildWindow(panel, ordered: .below)
+            // `.above` keeps the drawer visible when a short screen forces it to
+            // overlap the receiver edge instead of shrinking below content height.
+            parent.addChildWindow(panel, ordered: .above)
             panel.makeKeyAndOrderFront(nil)
             NSAnimationContext.runAnimationGroup { context in
                 context.duration = 0.24
@@ -99,32 +101,43 @@ struct DrawerWindowPresenter: NSViewRepresentable {
 }
 
 enum DrawerPanelPlacement {
+    /// 抽屉内容在这个高度以下会被裁切：36pt 内边距 + 标题行 + 搜索框 + 四个筛选器 + 两行电台。
+    static let minimumContentHeight: CGFloat = 280
+
     static func frame(parent: NSRect, visibleScreen: NSRect, preferredHeight: CGFloat) -> NSRect {
         let margin: CGFloat = 8
         let gap: CGFloat = 12
         let width = min(parent.width, max(1, visibleScreen.width - margin * 2))
         let x = min(max(parent.minX, visibleScreen.minX + margin), visibleScreen.maxX - margin - width)
+        let screenHeight = max(1, visibleScreen.height - margin * 2)
+        let height = min(preferredHeight, screenHeight)
+
         let belowSpace = max(0, parent.minY - visibleScreen.minY - gap)
         let aboveSpace = max(0, visibleScreen.maxY - parent.maxY - gap)
-        let minimumUsefulHeight = min(180, preferredHeight)
 
-        if belowSpace >= minimumUsefulHeight {
-            let height = min(preferredHeight, belowSpace)
+        // A side that fits the whole panel keeps the drawer and the receiver apart.
+        if belowSpace >= height {
             return NSRect(x: x, y: parent.minY - gap - height, width: width, height: height)
         }
-        if aboveSpace >= minimumUsefulHeight {
-            let height = min(preferredHeight, aboveSpace)
+        if aboveSpace >= height {
             return NSRect(x: x, y: parent.maxY + gap, width: width, height: height)
         }
 
-        // On short displays, use the side with more room and shrink the panel
-        // instead of letting AppKit relocate an off-screen child window.
-        if belowSpace >= aboveSpace {
-            let height = min(preferredHeight, max(1, belowSpace))
-            return NSRect(x: x, y: max(visibleScreen.minY, parent.minY - gap - height), width: width, height: height)
+        // Neither side fits. Keep the content intact and let the panel overlap the
+        // receiver edge instead of shrinking it below its intrinsic height, which
+        // used to crop the drawer's top and bottom once the receiver sat mid-screen.
+        let minimum = min(minimumContentHeight, height, screenHeight)
+        let belowHeight = min(height, max(belowSpace, minimum))
+        let aboveHeight = min(height, max(aboveSpace, minimum))
+
+        if belowHeight >= aboveHeight {
+            let desired = parent.minY - gap - belowHeight
+            let y = max(visibleScreen.minY, min(desired, visibleScreen.maxY - belowHeight))
+            return NSRect(x: x, y: y, width: width, height: belowHeight)
         }
-        let height = min(preferredHeight, max(1, aboveSpace))
-        return NSRect(x: x, y: min(visibleScreen.maxY - height, parent.maxY + gap), width: width, height: height)
+        let desired = parent.maxY + gap
+        let y = max(visibleScreen.minY, min(desired, visibleScreen.maxY - aboveHeight))
+        return NSRect(x: x, y: y, width: width, height: aboveHeight)
     }
 }
 

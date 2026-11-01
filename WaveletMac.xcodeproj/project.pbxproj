@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		08B224EB52F8DEB07FF5CE1E /* WaveletAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13A982A61FDF19C25B8D0946 /* WaveletAssets.xcassets */; };
 		10C71E60A7FB153E7CDA30F4 /* PersonalRadioManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA84627744ADDC9A164851C /* PersonalRadioManagerView.swift */; };
+		24B71F4184514011B7CCB8DC /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC287C0A07916C4E2508CFB /* AboutView.swift */; };
 		40AF9051462104737DA8143F /* NotoSansSC-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1408CA773B7625451E88DABA /* NotoSansSC-OFL.txt */; };
 		52EE92219BABE261EADB5FB2 /* PersonalCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B39F565B9EDD01F366261C /* PersonalCatalog.swift */; };
 		5A2340EFA7B6DA5EACA99CE9 /* Inter.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DF68822DF76D16B822E7E50C /* Inter.ttf */; };
@@ -24,6 +25,7 @@
 		9CBD6ABB95F5F7ECDD324B4B /* FontRegistrar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90665AE69CAE8A87D069CB2 /* FontRegistrar.swift */; };
 		A8A54A59C0A6F5B38FABB62F /* LocalMediaStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2925C48091AA25312D7D9ECE /* LocalMediaStore.swift */; };
 		A9F88D81E0A85DF5667943C1 /* SMBClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E04B2DD0EE9C7A85FD078E1 /* SMBClient.swift */; };
+		ADD84A3EA3A65B781B18FB24 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = AE9443C3D5450F2B00D471AF /* Sparkle */; };
 		B0336966932181041514B709 /* Archivo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EE2A0153E75BEAD7720C1762 /* Archivo.ttf */; };
 		B053BEE94E1356A2272AFABB /* wavelet-logo-white3.png in Resources */ = {isa = PBXBuildFile; fileRef = 35C940A7F55E1266FBE69C4E /* wavelet-logo-white3.png */; };
 		B0935B6C214DC802490E983F /* CatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40F980520BBB82E1063F5AC9 /* CatalogTests.swift */; };
@@ -33,6 +35,7 @@
 		C130C8872BD39B8935F35596 /* UPnPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5CA554A9F2333070B73A062 /* UPnPClient.swift */; };
 		C91B569A9AD269BCAD95A0E4 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BECEDB52E884949B826C408 /* MenuBarView.swift */; };
 		CC5162B60AE2149D49078417 /* LocalMediaLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDAB991CE1E02A4253A8262B /* LocalMediaLibraryView.swift */; };
+		DFA646CDC753D398C071748F /* AppUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC32EF6BF5BB0C40A909FC3 /* AppUpdater.swift */; };
 		EB3426B3EF1F90ECE4833A85 /* MediaLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68958F5572F1DE82281A784 /* MediaLocalization.swift */; };
 		ECB00E3DCB870AAF52F24B08 /* Inter-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = DC376507C5C193EF96FE2ADA /* Inter-OFL.txt */; };
 		F05809620A42DDA1D52083C6 /* WaveletMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F812A2EBB4704F2F87878FD0 /* WaveletMacApp.swift */; };
@@ -54,6 +57,7 @@
 
 /* Begin PBXFileReference section */
 		0D3CB82C441D5FA8EA36706C /* NotoSansSC.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = NotoSansSC.ttf; sourceTree = "<group>"; };
+		0FC287C0A07916C4E2508CFB /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		13A982A61FDF19C25B8D0946 /* WaveletAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = WaveletAssets.xcassets; sourceTree = "<group>"; };
 		1408CA773B7625451E88DABA /* NotoSansSC-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "NotoSansSC-OFL.txt"; sourceTree = "<group>"; };
 		1C52B96363B433168BFAFF5C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -71,6 +75,7 @@
 		7CB563B5E8BBB15FA118F3BC /* RadioCatalogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioCatalogStore.swift; sourceTree = "<group>"; };
 		7E2278317692FA60E95F20B4 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		8E04B2DD0EE9C7A85FD078E1 /* SMBClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMBClient.swift; sourceTree = "<group>"; };
+		9DC32EF6BF5BB0C40A909FC3 /* AppUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdater.swift; sourceTree = "<group>"; };
 		A871290EC8D0469135FCC582 /* PlaybackEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackEngine.swift; sourceTree = "<group>"; };
 		AB6EA4B4350819633DCB0F99 /* WaveletMacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WaveletMacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2B39F565B9EDD01F366261C /* PersonalCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalCatalog.swift; sourceTree = "<group>"; };
@@ -91,6 +96,17 @@
 		FA21F7E87EDE68C68AD52578 /* PlaybackProgressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackProgressTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		4C82E519BD8C8DBA1D4DF516 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ADD84A3EA3A65B781B18FB24 /* Sparkle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
 		490EA5C1CDF8699353F2D304 /* Shared */ = {
 			isa = PBXGroup;
@@ -105,6 +121,8 @@
 		59CECD6A635F22B06B752789 /* WaveletMac */ = {
 			isa = PBXGroup;
 			children = (
+				0FC287C0A07916C4E2508CFB /* AboutView.swift */,
+				9DC32EF6BF5BB0C40A909FC3 /* AppUpdater.swift */,
 				F23D63A423AC6BE1F8DD148A /* AudioOutputMonitor.swift */,
 				1C52B96363B433168BFAFF5C /* ContentView.swift */,
 				D90665AE69CAE8A87D069CB2 /* FontRegistrar.swift */,
@@ -217,6 +235,7 @@
 			buildPhases = (
 				7077B5DFBB06FF6F1E5DD867 /* Sources */,
 				7B5C25B4923F93E1D9FE6970 /* Resources */,
+				4C82E519BD8C8DBA1D4DF516 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -224,6 +243,7 @@
 			);
 			name = WaveletMac;
 			packageProductDependencies = (
+				AE9443C3D5450F2B00D471AF /* Sparkle */,
 			);
 			productName = WaveletMac;
 			productReference = F86BBDC3B9E16435D1DCD409 /* WaveletMac.app */;
@@ -253,6 +273,9 @@
 			);
 			mainGroup = 7F75CD64F6495C78B6DBD21F;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C1FA9393B20F3122A6DBDE9E /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7BCD7C868A3DEB56BDC20039 /* Products */;
 			projectDirPath = "";
@@ -289,6 +312,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				24B71F4184514011B7CCB8DC /* AboutView.swift in Sources */,
+				DFA646CDC753D398C071748F /* AppUpdater.swift in Sources */,
 				F4ED2F11C00E9C14CF846C37 /* AudioOutputMonitor.swift in Sources */,
 				625AE91E2A887AF5BF88E0A1 /* ContentView.swift in Sources */,
 				9CBD6ABB95F5F7ECDD324B4B /* FontRegistrar.swift in Sources */,
@@ -424,7 +449,7 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = 2Z4FLDWWW9;
 				ENABLE_TESTABILITY = NO;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -435,7 +460,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.1;
+				MARKETING_VERSION = 1.3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mythmedia.waveletmac;
 				PRODUCT_MODULE_NAME = WaveletMac;
 				PRODUCT_NAME = Wavelet;
@@ -525,7 +550,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = WaveletMac/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Wavelet;
@@ -534,7 +559,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.1;
+				MARKETING_VERSION = 1.3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mythmedia.waveletmac;
 				PRODUCT_MODULE_NAME = WaveletMac;
 				PRODUCT_NAME = Wavelet;
@@ -573,6 +598,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C1FA9393B20F3122A6DBDE9E /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.10.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AE9443C3D5450F2B00D471AF /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C1FA9393B20F3122A6DBDE9E /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9011F6B4119E8FD695F153E8 /* Project object */;
 }

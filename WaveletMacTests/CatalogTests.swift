@@ -457,6 +457,20 @@ final class CatalogTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(below.height, 180)
     }
 
+    func testDrawerPlacementKeepsContentHeightWhenReceiverSitsMidScreen() {
+        let screen = NSRect(x: 0, y: 0, width: 1440, height: 860)
+        // Receiver low on the display: 226pt below it, 70pt above it, so no side
+        // fits the preferred 350pt drawer.
+        let midScreen = NSRect(x: 300, y: 238, width: 600, height: 540)
+        let frame = DrawerPanelPlacement.frame(parent: midScreen, visibleScreen: screen, preferredHeight: 350)
+        // Shrinking to the 226pt gap used to crop the drawer's header and filters.
+        XCTAssertGreaterThanOrEqual(frame.height, DrawerPanelPlacement.minimumContentHeight - 0.01)
+        XCTAssertGreaterThanOrEqual(frame.minY, screen.minY)
+        XCTAssertLessThanOrEqual(frame.maxY, screen.maxY)
+        // Overlapping the receiver edge is the intended fallback on short displays.
+        XCTAssertGreaterThanOrEqual(frame.maxY, midScreen.minY)
+    }
+
     func testDrawerPlacementUsesOwningDisplayCoordinatesAndClampsHorizontally() {
         let rightDisplay = NSRect(x: 1440, y: 0, width: 1280, height: 900)
         let parent = NSRect(x: 2500, y: 120, width: 600, height: 540)
