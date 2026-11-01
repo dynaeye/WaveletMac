@@ -17,6 +17,7 @@ Wavelet is a personal internet radio player for macOS. Start with an empty list,
 - Browse and play audio from SMB shares, UPnP/DLNA servers, and folders on this Mac. Local playback supports folders, queues, seeking, and the same controls as radio.
 - Choose Light, Dark, or System appearance; the interface is available in Simplified Chinese, Traditional Chinese, English, Japanese, Korean, Thai, Spanish, and Arabic.
 - By default, playback does not start automatically at launch; you can change this in Settings.
+- Wavelet checks for updates once a day and installs them in place; check manually from the About window or Settings.
 
 ### Version and System Requirements
 
@@ -46,6 +47,7 @@ Wavelet 是 macOS 個人網路收音機。初次使用時電台列表為空，�
 - 瀏覽並播放 SMB 共享、UPnP/DLNA 伺服器及本機資料夾中的音訊；支援資料夾、佇列、進度拖曳和與電台相同的播放控制。
 - 選擇淺色、深色或跟隨系統外觀；介面提供簡體中文、繁體中文、English、日本語、한국어、ไทย、Español 和 العربية。
 - 預設不會在啟動時自動播放，可在設定中更改。
+- 每天檢查一次更新並可直接就地安裝；也可從「關於 Wavelet」視窗或設定手動檢查。
 
 ### 版本與系統需求
 
@@ -75,6 +77,7 @@ Wavelet 是 macOS 个人网络收音机。首次使用时电台列表为空，�
 - 浏览并播放 SMB 共享、UPnP/DLNA 服务器及本机文件夹中的音频；支持文件夹、队列、进度拖曳和与电台相同的播放控制。
 - 选择浅色、深色或跟随系统外观；界面提供简体中文、繁體中文、English、日本語、한국어、ไทย、Español 和 العربية。
 - 默认不会在启动时自动播放，可在设置中更改。
+- 每天检查一次更新并可直接就地安装；也可从「关于 Wavelet」窗口或设置手动检查。
 
 ### 版本与系统要求
 
@@ -104,14 +107,15 @@ Wavelet は macOS 向けの個人用インターネットラジオです。初�
 - SMB 共有、UPnP/DLNA サーバー、この Mac のフォルダから音声を参照して再生できます。フォルダ、キュー、シークに対応し、ラジオと同じ操作で再生できます。
 - ライト、ダーク、システムの外観を選択できます。インターフェースは簡体字中国語、繁体字中国語、英語、日本語、韓国語、タイ語、スペイン語、アラビア語に対応しています。
 - 初期設定では起動時に自動再生されません。設定で変更できます。
+- 1 日 1 回アップデートを確認し、その場で適用できます。手動確認は「Wavelet について」ウインドウまたは設定から行えます。
 
 ### バージョンとシステム要件
 
-最新リリース：1.0（旧版）。macOS 15 以降に対応し、Apple シリコンと Intel Mac のユニバーサルビルドです。
+最新リリース：1.3.3。macOS 15 以降に対応し、Apple シリコンと Intel Mac のユニバーサルビルドです。
 
 ### ダウンロードとインストール
 
-旧 Wavelet 1.0 は Developer ID 署名と Apple の公証を完了しています。[GitHub Releases からダウンロード](https://github.com/dynaeye/WaveletMac/releases/download/v1.0/Wavelet-1.0.dmg)できますが、上記の個人用ラジオ機能は含まれていません。
+Wavelet 1.3.3 は Developer ID 署名と Apple の公証を完了しています。[GitHub Releases からダウンロード](https://github.com/dynaeye/WaveletMac/releases/download/v1.3.3/Wavelet-1.3.3.dmg)できます。同ページに SHA-256 チェックサムを用意しています。旧 Wavelet 1.0 も引き続き入手できます。
 
 ### フィードバック
 
@@ -133,14 +137,15 @@ Wavelet은 macOS용 개인 인터넷 라디오입니다. 처음 실행하면 방
 - SMB 공유, UPnP/DLNA 서버 및 이 Mac의 폴더에서 오디오를 찾아 재생할 수 있습니다. 폴더, 대기열, 탐색을 지원하며 라디오와 같은 컨트롤을 사용합니다.
 - 라이트, 다크 또는 시스템 모양을 선택할 수 있으며, 인터페이스는 중국어 간체, 중국어 번체, 영어, 일본어, 한국어, 태국어, 스페인어, 아랍어를 지원합니다.
 - 기본적으로 앱 실행 시 자동으로 재생되지 않으며, 설정에서 변경할 수 있습니다.
+- 하루에 한 번 업데이트를 확인하고 바로 설치합니다. 수동 확인은 'Wavelet 정보' 창이나 설정에서 할 수 있습니다.
 
 ### 버전 및 시스템 요구 사항
 
-최신 출시 버전: 1.0 (이전 버전). macOS 15 이상과 Apple 실리콘 및 Intel Mac을 지원합니다.
+최신 출시 버전: 1.3.3. macOS 15 이상과 Apple 실리콘 및 Intel Mac을 지원합니다.
 
 ### 다운로드 및 설치
 
-이전 Wavelet 1.0은 Developer ID 서명과 Apple 공증을 완료했습니다. [GitHub Releases에서 다운로드](https://github.com/dynaeye/WaveletMac/releases/download/v1.0/Wavelet-1.0.dmg)할 수 있지만, 위의 개인 라디오 기능은 포함되어 있지 않습니다.
+Wavelet 1.3.3은 Developer ID 서명과 Apple 공증을 완료했습니다. [GitHub Releases에서 다운로드](https://github.com/dynaeye/WaveletMac/releases/download/v1.3.3/Wavelet-1.3.3.dmg)할 수 있으며, 같은 페이지에 SHA-256 체크섬이 있습니다. 이전 Wavelet 1.0도 계속 받을 수 있습니다.
 
 ### 피드백
 
@@ -161,14 +166,15 @@ Wavelet เป็นวิทยุอินเทอร์เน็ตส่ว
 - เรียกดูและเล่นเสียงจากแชร์ SMB เซิร์ฟเวอร์ UPnP/DLNA และโฟลเดอร์บน Mac นี้ รองรับโฟลเดอร์ คิว การเลื่อนตำแหน่ง และควบคุมเหมือนวิทยุ
 - เลือกธีมสว่าง มืด หรือตามระบบ อินเทอร์เฟซรองรับภาษาจีนตัวย่อ ภาษาจีนตัวเต็ม ภาษาอังกฤษ ภาษาญี่ปุ่น ภาษาเกาหลี ภาษาไทย ภาษาสเปน และภาษาอาหรับ
 - ค่าเริ่มต้นจะไม่เล่นอัตโนมัติเมื่อเปิดแอป และเปลี่ยนได้ในการตั้งค่า
+- ตรวจหาการอัปเดตวันละครั้งและติดตั้งได้ทันที ตรวจสอบด้วยตนเองได้จากหน้าต่างเกี่ยวกับ Wavelet หรือการตั้งค่า
 
 ### เวอร์ชันและความต้องการของระบบ
 
-เวอร์ชันล่าสุดที่เผยแพร่: 1.0 (รุ่นเดิม) รองรับ macOS 15 ขึ้นไป และ Mac ทั้งชิป Apple และ Intel
+เวอร์ชันล่าสุดที่เผยแพร่: 1.3.3 รองรับ macOS 15 ขึ้นไป และ Mac ทั้งชิป Apple และ Intel
 
 ### ดาวน์โหลดและติดตั้ง
 
-Wavelet 1.0 รุ่นเดิมผ่านการลงนาม Developer ID และการรับรองจาก Apple แล้ว [ดาวน์โหลดจาก GitHub Releases](https://github.com/dynaeye/WaveletMac/releases/download/v1.0/Wavelet-1.0.dmg) ได้ แต่ไม่มีฟีเจอร์วิทยุส่วนบุคคลที่กล่าวไว้ข้างต้น
+Wavelet 1.3.3 ผ่านการลงนาม Developer ID และการรับรองจาก Apple แล้ว [ดาวน์โหลดจาก GitHub Releases](https://github.com/dynaeye/WaveletMac/releases/download/v1.3.3/Wavelet-1.3.3.dmg) ได้ และมีไฟล์ตรวจสอบ SHA-256 ในหน้าเดียวกัน Wavelet 1.0 รุ่นเดิมยังดาวน์โหลดได้
 
 ### ข้อเสนอแนะ
 
@@ -189,14 +195,15 @@ Wavelet es un reproductor de radio por internet personal para macOS. La lista co
 - Explora y reproduce audio de recursos compartidos SMB, servidores UPnP/DLNA y carpetas de este Mac. Admite carpetas, colas, búsqueda de posición y los mismos controles que la radio.
 - Elige la apariencia clara, oscura o del sistema; la interfaz está disponible en chino simplificado, chino tradicional, inglés, japonés, coreano, tailandés, español y árabe.
 - De forma predeterminada, la reproducción no se inicia automáticamente al abrir la app; puedes cambiarlo en Ajustes.
+- Comprueba si hay actualizaciones una vez al día y las instala en el acto; puedes comprobarlo manualmente en la ventana Acerca de Wavelet o en Ajustes.
 
 ### Versión y requisitos del sistema
 
-Última versión publicada: 1.0 (versión anterior). Compatible con macOS 15 o posterior y Mac con Apple silicon o Intel.
+Última versión publicada: 1.3.3. Compatible con macOS 15 o posterior y Mac con Apple silicon o Intel.
 
 ### Descarga e instalación
 
-La versión anterior Wavelet 1.0 tiene firma Developer ID y notarización de Apple. Puedes [descargarla desde GitHub Releases](https://github.com/dynaeye/WaveletMac/releases/download/v1.0/Wavelet-1.0.dmg), pero no incluye las funciones de radio personal descritas arriba.
+Wavelet 1.3.3 tiene firma Developer ID y notarización de Apple. Puedes [descargarla desde GitHub Releases](https://github.com/dynaeye/WaveletMac/releases/download/v1.3.3/Wavelet-1.3.3.dmg); en la misma página se publica la suma de comprobación SHA-256. La versión anterior Wavelet 1.0 sigue disponible.
 
 ### Comentarios
 
@@ -219,14 +226,15 @@ Wavelet مشغل راديو إنترنت شخصي لنظام macOS. تبدأ ق�
 - استعرض الصوت وشغّله من مشاركات SMB وخوادم UPnP/DLNA ومجلدات على هذا الـ Mac. يدعم المجلدات وقوائم التشغيل والانتقال، مع عناصر التحكم نفسها.
 - اختر المظهر الفاتح أو الداكن أو حسب النظام؛ تتوفر الواجهة بالصينية المبسطة والصينية التقليدية والإنجليزية واليابانية والكورية والتايلاندية والإسبانية والعربية.
 - افتراضيًا، لا يبدأ التشغيل تلقائيًا عند فتح التطبيق؛ ويمكنك تغيير ذلك من الإعدادات.
+- يتحقق من التحديثات مرة يوميًا ويثبّتها في مكانها؛ ويمكنك التحقق يدويًا من نافذة "حول Wavelet" أو الإعدادات.
 
 ### الإصدار ومتطلبات النظام
 
-أحدث إصدار منشور: 1.0 (الإصدار السابق). يدعم macOS 15 أو أحدث وأجهزة Mac بمعالجات Apple وIntel.
+أحدث إصدار منشور: 1.3.3. يدعم macOS 15 أو أحدث وأجهزة Mac بمعالجات Apple وIntel.
 
 ### التنزيل والتثبيت
 
-الإصدار السابق Wavelet 1.0 موقّع بشهادة Developer ID وموثّق من Apple. يمكنك [تنزيله من إصدارات GitHub](https://github.com/dynaeye/WaveletMac/releases/download/v1.0/Wavelet-1.0.dmg)، لكنه لا يتضمن ميزات الراديو الشخصي المذكورة أعلاه.
+Wavelet 1.3.3 موقّع بشهادة Developer ID وموثّق من Apple. يمكنك [تنزيله من إصدارات GitHub](https://github.com/dynaeye/WaveletMac/releases/download/v1.3.3/Wavelet-1.3.3.dmg)، وتُتاح بصمة SHA-256 في الصفحة نفسها. لا يزال الإصدار السابق Wavelet 1.0 متاحًا.
 
 ### الملاحظات
 
